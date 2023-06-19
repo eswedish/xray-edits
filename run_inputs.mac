@@ -1,0 +1,43 @@
+# for mt mode
+/run/useMaximumLogicalCores
+#/process/had/verbose 0
+/run/initialize
+
+#/random/setSeeds 223456 67892
+
+/control/execute geom_input.mac
+/run/reinitializeGeometry
+#/control/execute press.mac
+
+#/vis/viewer/create
+/tracking/verbose 0
+/run/verbose 0
+
+/gps/particle gamma
+
+/gps/pos/type Beam
+/gps/pos/centre 0. 0. 0. cm
+/gps/ene/type Arb
+
+/gps/hist/type energy
+/gps/hist/file ../dk04_50kev_spect.dat
+/gps/hist/inter Lin
+/gps/ene/diffspec 1
+
+/gps/ang/type cos
+/gps/ang/mintheta 0 deg
+/gps/ang/maxtheta 2.6 deg
+/gps/ang/minphi 0 deg
+/gps/ang/maxphi 360 deg
+/gps/ang/focuspoint 0. 0. -12.5 cm
+
+# if want visual -- must be single thread
+#/control/execute vis.mac
+#/vis/scene/add/trajectories
+
+# fills in the pressures looped over from press.mac
+#/pressure/airPress {press}
+#/run/reinitializeGeometry
+
+/run/beamOn 1000000
+#/run/printProgress 10

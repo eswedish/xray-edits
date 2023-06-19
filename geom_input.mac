@@ -1,0 +1,29 @@
+## geometry user inputs
+
+## MATERIALS -- check if in material database linked in README
+## can also use command line 'material/nist/printElement' & 'material/nist/listMaterials'
+
+/geom/filt_mat G4_GRAPHITE  # G4 database mat name
+
+# enter 0 if sample material found on database, 1 if doing manual
+/geom/smat_found 0
+
+# uncomment this pt if database -- enter in name in G4 databse
+/geom/samp_mat G4_GRAPHITE    # G4 database name
+
+# uncomment this pt if manual
+#/geom/samp_mat hdpe          # give name for material
+#/geom/samp_density 0.95      # material density [g/cm^3]
+#/geom/samp_ncompnts 2        # number of components making up sample
+
+
+## NOTE: this is the std mat def, temp and pressure default to STP
+
+
+## PLACEMENTS -- note in [m]
+## filter always ends at -0.272 m
+/geom/filt_start -0.270 *m
+## sample always ends at BP start ie -0.29105 m
+/geom/samp_start -0.28905 *m
+
+/run/reinitializeGeometry

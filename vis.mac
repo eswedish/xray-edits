@@ -1,0 +1,12 @@
+/vis/viewer/create
+/vis/open OGL
+#/vis/ogl/set/displayListLimit 3000
+/vis/viewer/set/viewpointVector 1 1 1
+/vis/drawVolume
+/vis/viewer/set/autoRefresh true
+/vis/scene/add/trajectories smooth
+/vis/scene/add/scale 10 cm
+/vis/scene/add/axes
+/vis/viewer/set/upVector 0 0 1
+/vis/scene/add/eventID
+/vis/scene/endOfEventAction accumulate 1000
