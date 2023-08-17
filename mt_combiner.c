@@ -17,6 +17,9 @@ void mt_combiner()
     // initiate a TChain w/ name of TTree inside we want to proccess
     TChain photon_chain("Photons");
     photon_chain.Add("output_diode*.root"); // wildcard treatment -- ie doing all the files w this beginning (all the threads)
+    
+    TChain scoring("Scoring");
+    scoring.Add("output_diode*.root");
 
     // define variables from tree and assign to respective branches
     photon_chain.SetBranchAddress("fEvent", &fEvent);
@@ -27,6 +30,8 @@ void mt_combiner()
     photon_chain.SetBranchAddress("fParentID", &fParentID);
     photon_chain.SetBranchAddress("fTrackID", &fTrackID);
     photon_chain.SetBranchAddress("fProcess", &fProcess);
+    
+    scoring.SetBranchAddress("fEdep", &fEdep);
 
 
     photon_chain.Merge("outputsum.root");
@@ -72,6 +77,7 @@ void mt_combiner()
     
 
     // for each of above, do dEdep, Z dist w dEdep weight, XY weighted energy
+    //go back and modify weighting for fEdep??
 
     // a) vac
     TH1F *h1 = new TH1F("h1","dEdep in Vac", 250, 0.0, 0.025);
@@ -90,17 +96,13 @@ void mt_combiner()
     TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in IC", 120, air1_ic, ic_cr); //change to ic_cr
     TH2D *h23 = new TH2D("h23","XY weighted energy in IC", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h24 = new TH2D("h24","XY e- weighted energy in IC", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h25 = new TH1F("h25", "fEdep in IC", 250, 0.0, 0.025);
 
     //d) ceramic
     TH1F *h31 = new TH1F("h31","dEdep in Ceramic", 250, 0.0, 0.025);
     TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Ceramic", 120 , ic_cr, cr_air2);
     TH2D *h33 = new TH2D("h33","XY weighted energy in Ceramic", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h34 = new TH2D("h34","XY e- weighted energy in Ceramic", 300, -30.0, 30.0, 300, -30.0, 30.0);
-
-    cout << ic_cr << endl;
-    cout << cr_air2 << endl;
-
-    // Redefine & recomment stuff below ex. e) air 2 & h41,42 etc etc
 
     // e) air 2
     TH1F *h41 = new TH1F("h41","dEdep in Air 2", 250, 0.0, 0.025);
@@ -295,8 +297,23 @@ void mt_combiner()
 
 
       }
-
     }
+    
+    for (i=0; i<scoring.GetEntries(); i++)
+    {
+      scoring.GetEntry(i);
+      if(fEdep != 0)
+      {
+        //c) diode
+        if ((fZ >= air1_ic) && (fZ< ic_cr))
+        {
+          if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+            {
+              h25->Fill(fEdep);
+            }
+        }
+       }
+     }
 
 
     cout << "e vac:" << totEdep_vac << endl;
@@ -327,6 +344,10 @@ void mt_combiner()
     TCanvas *c10 = new TCanvas("Total", "Total");
 
     fout->cd();
+
+// Need to divide canvasses differently or create whoel new canvasses for fedep bc 2,2 is not enough space
+//if fEdep requires all same parts as dEdep will make new canvas 2,2
+//else make current canvasses 2,3
 
     // a)
     c0->Divide(2,2);
@@ -383,6 +404,12 @@ void mt_combiner()
       h22->GetYaxis()->CenterTitle();
     c2->cd(3);
     h23->Draw("HIST");
+    c2->cd(4);
+    h25->Draw("HIST");
+      h25->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h25->GetYaxis()->SetTitle("Freq");
+      h25->GetXaxis()->CenterTitle();
+      h25->GetYaxis()->CenterTitle();
     c2->Write();
 
     //d) ceramic
@@ -404,8 +431,7 @@ void mt_combiner()
     h33->Draw("HIST");
     c3->Write();
 
-
-    // e) change to c4 and h4 etc etc
+    // e) 
     c4->Divide(2,2);
     c4->cd(1);
     gPad->SetLogy(1);
@@ -459,7 +485,7 @@ void mt_combiner()
       h62->GetXaxis()->CenterTitle();
       h62->GetYaxis()->CenterTitle();
     c6->cd(3);
-    h63->Draw("HIST");
+    h63->Draw("HIST"); 
     c6->Write();
 
     // h)
@@ -520,7 +546,6 @@ void mt_combiner()
       h92->GetYaxis()->CenterTitle();
     c9->cd(3);
     h93->Draw("HIST");
-
     c9->Write();
 
     // j) total
@@ -545,3 +570,5 @@ void mt_combiner()
     fout->Close();
 
     }
+
+
