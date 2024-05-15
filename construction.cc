@@ -31,7 +31,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   // starts & ends of geoms (units m)
   vac_start = 0.0;
   vac_air1  = -0.035;
-  air1_cu  = -0.09925; 
+  air1_cu  = -0.09965; 
   cu_di    = -0.09975;// act sensitive region (.5 mm)
   di_cr     = -0.10025;
   cr_air2   = -0.10225;
