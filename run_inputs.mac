@@ -39,5 +39,5 @@
 #/pressure/airPress {press}
 #/run/reinitializeGeometry
 
-/run/beamOn 1000000
+/run/beamOn 1000
 #/run/printProgress 10
