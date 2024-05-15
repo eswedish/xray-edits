@@ -6,8 +6,13 @@ void mt_combiner()
 
     int i, n, fEvent, fParentID, fTrackID, fProcess;
     double fX, fY, fZ, time, dedep, fEdep;
+<<<<<<< Updated upstream
     double totEdep_vac, totEdep_air1, totEdep_fl, totEdep_air2, totEdep_ic, totEdep_air3, totEdep_ff, totEdep_samp, totEdep_bp, totEdep_ld, totEdep;
     double vac_start, vac_air1, air1_ic, ic_air2, air2_fl, fl_air3, air3_samp, samp_bp, bp_ld, ld_end;
+=======
+    double totEdep_vac, totEdep_air1, totEdep_fl, totEdep_air2, totEdep_ic, totEdep_air3, totEdep_ff, totEdep_samp, totEdep_bp, totEdep_ld, totEdep, totEdep_cr;
+    double vac_start, vac_air1, air1_ic, ic_cr, cr_air2, ic_air2, air2_fl, fl_air3, air3_samp, samp_bp, bp_ld, ld_end, air1_fl, air1_air2;
+>>>>>>> Stashed changes
     //double x[300000], y[300000], z[300000];
     double dedp[1000000], dedpc[300000], dedpff[300000], dedps[300000], dedpbp[300000], dedpld[300000];
     double geom[20], geom_conv[20];
@@ -17,6 +22,12 @@ void mt_combiner()
     // initiate a TChain w/ name of TTree inside we want to proccess
     TChain photon_chain("Photons");
     photon_chain.Add("output_diode*.root"); // wildcard treatment -- ie doing all the files w this beginning (all the threads)
+<<<<<<< Updated upstream
+=======
+    
+    TChain scoring("Scoring");
+    scoring.Add("output_diode*.root");
+>>>>>>> Stashed changes
 
     // define variables from tree and assign to respective branches
     photon_chain.SetBranchAddress("fEvent", &fEvent);
@@ -36,7 +47,12 @@ void mt_combiner()
     // h. sample (295, 300) i. base plate (300, 320)
     totEdep_vac=0.0;
     totEdep_air1=0.0;
+<<<<<<< Updated upstream
     totEdep_fl=0.0;
+=======
+    totEdep_fl=0.0; //diode
+    totEdep_cr=0.0; //ceramic
+>>>>>>> Stashed changes
     totEdep_air2=0.0;
     totEdep_ic=0.0;
     totEdep_air3=0.0;
@@ -44,10 +60,38 @@ void mt_combiner()
     totEdep_samp=0.0;
     totEdep_bp=0.0;
     totEdep=0.0;
+ 
+    // removing diode 
+    //     n = 0;
+    //     FILE * file = fopen("geometry.tsv", "r");
+    //     for (n=0; n<11; n++)
+    //     {
+    //       fscanf(file, "%*s %lf\n", &geom[n]);
+    //       geom_conv[n] = -geom[n]*1000;
+    //       printf("geom[%i]=%lf\n",n,geom_conv[n]);
+    //     }
+    //     fclose(file);
+
+        // vac_start = geom_conv[0];
+        // vac_air1  = geom_conv[1];
+        // air1_ic   = geom_conv[2];
+        // //ic_air2   = geom_conv[3]; 
+        // ic_cr     = geom_conv[3];
+        // cr_air2   = geom_conv[4];
+        // air2_fl   = geom_conv[5];
+        // fl_air3   = geom_conv[6];
+        // air3_samp = geom_conv[7]; 
+        // samp_bp   = geom_conv[8]; 
+        // bp_ld     = geom_conv[9]; 
+        // ld_end    = geom_conv[10]; 
 
     n = 0;
     FILE * file = fopen("geometry.tsv", "r");
+<<<<<<< Updated upstream
     for (n=0; n<10; n++)
+=======
+    for (n=0; n<9; n++)
+>>>>>>> Stashed changes
     {
       fscanf(file, "%*s %lf\n", &geom[n]);
       geom_conv[n] = -geom[n]*1000;
@@ -57,6 +101,7 @@ void mt_combiner()
 
     vac_start = geom_conv[0];
     vac_air1  = geom_conv[1];
+<<<<<<< Updated upstream
     air1_ic   = geom_conv[2];
     ic_air2   = geom_conv[3];
     air2_fl   = geom_conv[4];
@@ -68,6 +113,19 @@ void mt_combiner()
     
 
     // for each of above, do dEdep, Z dist w dEdep weight, XY weighted energy
+=======
+    air1_air2 = geom_conv[2];
+    air2_fl   = geom_conv[3];
+    fl_air3   = geom_conv[4];
+    air3_samp = geom_conv[5]; 
+    samp_bp   = geom_conv[6]; 
+    bp_ld     = geom_conv[7]; 
+    ld_end    = geom_conv[8]; 
+    
+
+    // for each of above, do dEdep, Z dist w dEdep weight, XY weighted energy
+    //go back and modify weighting for fEdep??
+>>>>>>> Stashed changes
 
     // a) vac
     TH1F *h1 = new TH1F("h1","dEdep in Vac", 250, 0.0, 0.025);
@@ -75,6 +133,7 @@ void mt_combiner()
     TH2D *h3 = new TH2D("h3","XY Gamma weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h4 = new TH2D("h4","XY e- weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
+<<<<<<< Updated upstream
     // b) air1
     TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 250, 0.0, 0.025);
     TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_ic);
@@ -128,8 +187,84 @@ void mt_combiner()
     TH1F *h92 = new TH1F("h102","Z Dist w/ dEdep Weighting Tot", 170, vac_start, ld_end);
     TH2D *h93 = new TH2D("h103","XY gamma weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h94 = new TH2D("h104","XY e- weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
+=======
+    // // b) air1
+    // TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 250, 0.0, 0.025);
+    // TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_ic);
+    // TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    // TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // b) air1
+    TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 250, 0.0, 0.025);
+    TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_air2);
+    TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+
+    // // c) IC
+    // TH1F *h21 = new TH1F("h21","dEdep in IC", 250, 0.0, 0.025);
+    // TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in IC", 120, air1_ic, ic_cr); //change to ic_cr
+    // TH2D *h23 = new TH2D("h23","XY weighted energy in IC", 300, -30.0, 30.0, 300, -304.0, 30.0);
+    // TH2D *h24 = new TH2D("h24","XY e- weighted energy in IC", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    // TH1F *h25 = new TH1F("h25", "fEdep in IC", 250, 0.0, 0.025);
+
+    // //d) ceramic
+    // TH1F *h31 = new TH1F("h31","dEdep in Ceramic", 250, 0.0, 0.025);
+    // TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Ceramic", 120 , ic_cr, cr_air2);
+    // TH2D *h33 = new TH2D("h33","XY weighted energy in Ceramic", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    // TH2D *h34 = new TH2D("h34","XY e- weighted energy in Ceramic", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // e) air 2
+    TH1F *h21 = new TH1F("h21","dEdep in Air 2", 250, 0.0, 0.025);
+    TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in Air 2", 164, air1_air2, air2_fl); 
+    TH2D *h23 = new TH2D("h23","XY weighted energy in Air 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h24 = new TH2D("h24","XY e- weighted energy in Air 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // // f) filter
+    // TH1F *h51 = new TH1F("h51","dEdep in filter", 250, 0.0, 0.025);
+    // TH1F *h52 = new TH1F("h52","Z Dist w/ dEdep Weighting in filter", 200, air2_fl, fl_air3);
+    // TH2D *h53 = new TH2D("h53","XY weighted energy in filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    // TH2D *h54 = new TH2D("h54","XY e- weighted energy in filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // f) filter
+    TH1F *h31 = new TH1F("h31","dEdep in filter", 250, 0.0, 0.025);
+    TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in filter", 200, air2_fl, fl_air3);
+    TH2D *h33 = new TH2D("h33","XY weighted energy in filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h34 = new TH2D("h34","XY e- weighted energy in filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // g) air 3
+    TH1F *h41 = new TH1F("h41","dEdep in Air 3", 250, 0.0, 0.025);
+    TH1F *h42 = new TH1F("h42","Z Dist w/ dEdep Weighting in Air 3", 170, fl_air3, air3_samp);
+    TH2D *h43 = new TH2D("h43","XY weighted energy in Air 3", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h44 = new TH2D("h44","XY e- weighted energy in Air 3", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // h) sample
+    TH1F *h51 = new TH1F("h51","dEdep in Sample", 300, 0.0, 0.03);
+    TH1F *h52 = new TH1F("h52","Z Dist w/ dEdep Weighting in Sample", 200, air3_samp, samp_bp);
+    TH2D *h53 = new TH2D("h53","XY weighted energy in Sample", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h54 = new TH2D("h54","XY weighted energy in Sample", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // i) base plate
+    TH1F *h61 = new TH1F("h61","dEdep in BP", 300, 0.0, 0.03);
+    TH1F *h62 = new TH1F("h62","Z Dist w/ dEdep Weighting in BP", 115, samp_bp, bp_ld);
+    TH2D *h63 = new TH2D("h63","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h64 = new TH2D("h64","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // j) lead
+    TH1F *h71 = new TH1F("h71","dEdep in Lead", 300, 0.0, 0.03);
+    TH1F *h72 = new TH1F("h72","Z Dist w/ dEdep Weighting in Lead", 130, bp_ld, ld_end);
+    TH2D *h73 = new TH2D("h73","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h74 = new TH2D("h74","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
+
+    // k) total
+    TH1F *h81 = new TH1F("h81","dEdep Tot", 300, 0.0, 0.03);
+    TH1F *h82 = new TH1F("h82","Z Dist w/ dEdep Weighting Tot", 170, vac_start, ld_end);
+    TH2D *h83 = new TH2D("h83","XY gamma weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH2D *h84 = new TH2D("h84","XY e- weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
+>>>>>>> Stashed changes
 
     //dividing it up into in chamber v Sampleor
+    //removing diode
     for (i=0; i<photon_chain.GetEntries(); i++)
     {
       photon_chain.GetEntry(i);
@@ -148,7 +283,11 @@ void mt_combiner()
         }
 
         // b) air1
+<<<<<<< Updated upstream
         if ((fZ >= vac_air1) && (fZ< air1_ic))
+=======
+        if ((fZ >= vac_air1) && (fZ< air1_air2))
+>>>>>>> Stashed changes
         {
           if (((-250< fX) && (fX< 250)) && ((-250 < fY) && (fY < 250)))
             {
@@ -159,14 +298,46 @@ void mt_combiner()
             }
         }
 
+<<<<<<< Updated upstream
         // c) IC -- now diode :)
         if ((fZ >= air1_ic) && (fZ< ic_air2))
+=======
+        // // c) IC -- now diode :)
+        // if ((fZ >= air1_ic) && (fZ< ic_cr)) //ic_cr
+        // {
+        //   if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+        //     {
+        //       h21->Fill(dedep);
+        //       h22->Fill(fZ, dedep);
+        //       h23->Fill(fX, fY, dedep);
+        //       totEdep_ic = totEdep_ic + dedep;
+        //     }
+        // }
+
+        // // d) ceramic
+        // if ((fZ >= ic_cr) && (fZ< cr_air2))
+        // {
+        //   if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+        //     {
+        //       //cout << "hello"<< endl;
+        //       h31->Fill(dedep);
+        //       h32->Fill(fZ, dedep);
+        //       h33->Fill(fX,fY, dedep);
+        //       totEdep_cr = totEdep_cr + dedep;
+        //     }
+        // }
+
+
+        // e) air 2 change to h40
+        if ((fZ >= air1_air2) && (fZ< air2_fl))
+>>>>>>> Stashed changes
         {
-          if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+          if (((-25< fX) && (fX< 25)) && ((-25 < fY) && (fY < 25)))
             {
               h21->Fill(dedep);
               h22->Fill(fZ, dedep);
               h23->Fill(fX, fY, dedep);
+<<<<<<< Updated upstream
               totEdep_ic = totEdep_ic + dedep;
             }
         }
@@ -179,40 +350,67 @@ void mt_combiner()
               h31->Fill(dedep);
               h32->Fill(fZ, dedep);
               h33->Fill(fX, fY, dedep);
+=======
+>>>>>>> Stashed changes
               totEdep_air2 = totEdep_air2 + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // e) filter
+=======
+        // f) filter chaneg to h50
+>>>>>>> Stashed changes
         if ((fZ >= air2_fl) && (fZ< fl_air3))
         {
           if (sqrt((fX*fX)+(fY*fY)) <= (12.26))
             {
+<<<<<<< Updated upstream
               h41->Fill(dedep);
               h42->Fill(fZ, dedep);
               h43->Fill(fX, fY, dedep);
+=======
+              h31->Fill(dedep);
+              h32->Fill(fZ, dedep);
+              h33->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               totEdep_fl = totEdep_fl + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // f) air 3
+=======
+        // g) air 3 change to h60
+>>>>>>> Stashed changes
         if ((fZ >= fl_air3) && (fZ< air3_samp))
         {
           if (((-25< fX) && (fX< 25)) && ((-25 < fY) && (fY < 25)))
             {
+<<<<<<< Updated upstream
               h51->Fill(dedep);
               h52->Fill(fZ, dedep);
               h53->Fill(fX, fY, dedep);
+=======
+              h41->Fill(dedep);
+              h42->Fill(fZ, dedep);
+              h43->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               totEdep_air3 = totEdep_air3 + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // g) sample
+=======
+        // h) sample change to h70
+>>>>>>> Stashed changes
         if ((fZ >= air3_samp) && (fZ< samp_bp))
         {
           // if (((-25< fX) && (fX< 25)) && ((-25 < fY) && (fY < 25))) // used to be limit 4.63 both
           if (sqrt((fX*fX)+(fY*fY)) <= (13.12)) // x^2+y^2<=r^2 with r^2 z^2tan^2(half ang)
             {
+<<<<<<< Updated upstream
               h61->Fill(dedep);
               h62->Fill(fZ, dedep);
               if (fParentID == 0)
@@ -222,43 +420,85 @@ void mt_combiner()
               if (fParentID != 0) // 1 obv e-, but also 2 3 4 ... all come frm 1
               {
                 h64->Fill(fX, fY, dedep);
+=======
+              h51->Fill(dedep);
+              h52->Fill(fZ, dedep);
+              if (fParentID == 0)
+              {
+                h53->Fill(fX, fY, dedep);
+              }
+              if (fParentID != 0) // 1 obv e-, but also 2 3 4 ... all come frm 1
+              {
+                h54->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               }
               totEdep_samp = totEdep_samp + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // h) base plate
+=======
+        // i) base plate change to h80
+>>>>>>> Stashed changes
         if ((fZ >= samp_bp) && (fZ< bp_ld))
         {
           if (((-100< fX) && (fX< 100)) && ((-100 < fY) && (fY < 100))) // used to be limit 4.63 both
             {
+<<<<<<< Updated upstream
               h71->Fill(dedep);
               h72->Fill(fZ, dedep);
               h73->Fill(fX, fY, dedep);
+=======
+              h61->Fill(dedep);
+              h62->Fill(fZ, dedep);
+              h63->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               totEdep_bp = totEdep_bp + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // j) NEW LEAD
+=======
+        // j) NEW LEAD change to h90
+>>>>>>> Stashed changes
         if ((fZ >= bp_ld) && (fZ< ld_end))
         {
           if (((-200< fX) && (fX< 200)) && ((-200 < fY) && (fY < 200))) // used 20 cm -- current world xy
             {
+<<<<<<< Updated upstream
               h81->Fill(dedep);
               h82->Fill(fZ, dedep);
               h83->Fill(fX, fY, dedep);
+=======
+              h71->Fill(dedep);
+              h72->Fill(fZ, dedep);
+              h73->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               totEdep_ld = totEdep_ld + dedep;
             }
         }
 
+<<<<<<< Updated upstream
         // k) total
+=======
+        // k) total change to h100
+>>>>>>> Stashed changes
         if ((fZ >= vac_start) && (fZ< ld_end))
         {
           if (((-200< fX) && (fX< 200)) && ((-200 < fY) && (fY < 200))) // used 20 cm -- current world xy
             {
+<<<<<<< Updated upstream
               h91->Fill(dedep);
               h92->Fill(fZ, dedep);
               h93->Fill(fX, fY, dedep);
+=======
+              //cout << "hello total" << endl;
+              h81->Fill(dedep);
+              h82->Fill(fZ, dedep);
+              h83->Fill(fX, fY, dedep);
+>>>>>>> Stashed changes
               totEdep = totEdep + dedep;
             }
         }
@@ -267,11 +507,36 @@ void mt_combiner()
       }
 
     }
+<<<<<<< Updated upstream
 
 
     cout << "e vac:" << totEdep_vac << endl;
     cout << "e air 1: " <<totEdep_air1 << endl;
     cout << "e diode: " << totEdep_ic << endl;
+=======
+    
+    // for (i=0; i<scoring.GetEntries(); i++)
+    // {
+    //   scoring.GetEntry(i);
+    //   if(fEdep != 0)
+    //   {
+    //     //c) diode
+    //     if ((fZ >= air1_ic) && (fZ< ic_cr))
+    //     {
+    //       if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+    //         {
+    //           h25->Fill(fEdep);
+    //         }
+    //     }
+    //    }
+    //  }
+
+
+    cout << "e vac:" << totEdep_vac << endl;
+    cout << "e air 1: " << totEdep_air1 << endl;
+    //cout << "e diode: " << totEdep_ic << endl;
+    //cout << "e ceramic: " << totEdep_cr << endl;
+>>>>>>> Stashed changes
     cout << "e air 2:" << totEdep_air2 << endl;
     cout << "e filter:" << totEdep_fl << endl;
     cout << "e air 3:" << totEdep_air3 << endl;
@@ -285,6 +550,7 @@ void mt_combiner()
 
     TCanvas *c0 = new TCanvas("Vac", "Vac");
     TCanvas *c1 = new TCanvas("Air Gap 1", "Air Gap 1");
+<<<<<<< Updated upstream
     TCanvas *c2 = new TCanvas("IC", "IC");
     TCanvas *c3 = new TCanvas("Air Gap 2", "Air Gap 2");
     TCanvas *c4 = new TCanvas("Filter", "Filter");
@@ -296,6 +562,24 @@ void mt_combiner()
 
     fout->cd();
 
+=======
+    //TCanvas *c2 = new TCanvas("IC", "IC");
+    //TCanvas *c3 = new TCanvas("Ceramic", "Ceramic");
+    TCanvas *c2 = new TCanvas("Air Gap 2", "Air Gap 2");
+    TCanvas *c3 = new TCanvas("Filter", "Filter");
+    TCanvas *c4 = new TCanvas("Air Gap 3", "Air Gap 3");
+    TCanvas *c5 = new TCanvas("Sample", "Sample");
+    TCanvas *c6 = new TCanvas("Base Plate", "Base Plate");
+    TCanvas *c7 = new TCanvas("Lead", "Lead");
+    TCanvas *c8 = new TCanvas("Total", "Total");
+
+    fout->cd();
+
+// Need to divide canvasses differently or create whoel new canvasses for fedep bc 2,2 is not enough space
+//if fEdep requires all same parts as dEdep will make new canvas 2,2
+//else make current canvasses 2,3
+
+>>>>>>> Stashed changes
     // a)
     c0->Divide(2,2);
     c0->cd(1);
@@ -334,7 +618,51 @@ void mt_combiner()
     h13->Draw("HIST");
     c1->Write();
 
-    // c)
+    // // c)
+    // c2->Divide(2,2);
+    // c2->cd(1);
+    // gPad->SetLogy(1);
+    // h21->Draw("HIST");
+    //   h21->GetXaxis()->SetTitle("Deposited Energy over Step (MeV)");
+    //   h21->GetYaxis()->SetTitle("Freq");
+    //   h21->GetXaxis()->CenterTitle();
+    //   h21->GetYaxis()->CenterTitle();
+    // c2->cd(2);
+    // h22->Draw("HIST");
+    //   h22->GetXaxis()->SetTitle("-Z Dist (mm)");
+    //   h22->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
+    //   h22->GetXaxis()->CenterTitle();
+    //   h22->GetYaxis()->CenterTitle();
+    // c2->cd(3);
+    // h23->Draw("HIST");
+    // c2->cd(4);
+    // h25->Draw("HIST");
+    //   h25->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+    //   h25->GetYaxis()->SetTitle("Freq");
+    //   h25->GetXaxis()->CenterTitle();
+    //   h25->GetYaxis()->CenterTitle();
+    // c2->Write();
+
+    // //d) ceramic
+    // c3->Divide(2,2);
+    // c3->cd(1);
+    // gPad->SetLogy(1);
+    // h31->Draw("HIST");
+    //   h31->GetXaxis()->SetTitle("Deposited Energy over Step (MeV)");
+    //   h31->GetYaxis()->SetTitle("Freq");
+    //   h31->GetXaxis()->CenterTitle();
+    //   h31->GetYaxis()->CenterTitle();
+    // c3->cd(2);
+    // h32->Draw("HIST");
+    //   h32->GetXaxis()->SetTitle("-Z Dist (mm)");
+    //   h32->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
+    //   h32->GetXaxis()->CenterTitle();
+    //   h32->GetYaxis()->CenterTitle();
+    // c3->cd(3);
+    // h33->Draw("HIST");
+    // c3->Write();
+
+    // e) 
     c2->Divide(2,2);
     c2->cd(1);
     gPad->SetLogy(1);
@@ -353,7 +681,11 @@ void mt_combiner()
     h23->Draw("HIST");
     c2->Write();
 
+<<<<<<< Updated upstream
     // d)
+=======
+    // f)
+>>>>>>> Stashed changes
     c3->Divide(2,2);
     c3->cd(1);
     gPad->SetLogy(1);
@@ -372,7 +704,11 @@ void mt_combiner()
     h33->Draw("HIST");
     c3->Write();
 
+<<<<<<< Updated upstream
     // e)
+=======
+    // g)
+>>>>>>> Stashed changes
     c4->Divide(2,2);
     c4->cd(1);
     gPad->SetLogy(1);
@@ -388,10 +724,14 @@ void mt_combiner()
       h42->GetXaxis()->CenterTitle();
       h42->GetYaxis()->CenterTitle();
     c4->cd(3);
-    h43->Draw("HIST");
+    h43->Draw("HIST"); 
     c4->Write();
 
+<<<<<<< Updated upstream
     // f)
+=======
+    // h)
+>>>>>>> Stashed changes
     c5->Divide(2,2);
     c5->cd(1);
     gPad->SetLogy(1);
@@ -410,7 +750,11 @@ void mt_combiner()
     h53->Draw("HIST");
     c5->Write();
 
+<<<<<<< Updated upstream
     // g)
+=======
+    // i)
+>>>>>>> Stashed changes
     c6->Divide(2,2);
     c6->cd(1);
     gPad->SetLogy(1);
@@ -426,10 +770,17 @@ void mt_combiner()
       h62->GetXaxis()->CenterTitle();
       h62->GetYaxis()->CenterTitle();
     c6->cd(3);
+    h63->SetMarkerColor(kRed);
     h63->Draw("HIST");
+    h64->SetMarkerColor(kBlue);
+    h64->Draw("HIST same");
     c6->Write();
 
+<<<<<<< Updated upstream
     // h)
+=======
+    // i) lead
+>>>>>>> Stashed changes
     c7->Divide(2,2);
     c7->cd(1);
     gPad->SetLogy(1);
@@ -445,6 +796,7 @@ void mt_combiner()
       h72->GetXaxis()->CenterTitle();
       h72->GetYaxis()->CenterTitle();
     c7->cd(3);
+<<<<<<< Updated upstream
     h73->SetMarkerColor(kRed);
     h73->Draw("HIST");
     h74->SetMarkerColor(kBlue);
@@ -452,6 +804,12 @@ void mt_combiner()
     c7->Write();
 
     // i) lead
+=======
+    h73->Draw("HIST");
+    c7->Write();
+
+    // j) total
+>>>>>>> Stashed changes
     c8->Divide(2,2);
     c8->cd(1);
     gPad->SetLogy(1);
@@ -471,6 +829,7 @@ void mt_combiner()
 
     c8->Write();
 
+<<<<<<< Updated upstream
     // j) total
     c9->Divide(2,2);
     c9->cd(1);
@@ -490,6 +849,8 @@ void mt_combiner()
     h93->Draw("HIST");
     c9->Write();
 
+=======
+>>>>>>> Stashed changes
     fout->Close();
 
     }

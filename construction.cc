@@ -29,10 +29,20 @@ MyDetectorConstruction::MyDetectorConstruction()
   samp_start = -0.289;
 
   // starts & ends of geoms (units m)
+
+  //removing diode from code
   vac_start = 0.0;
   vac_air1  = -0.035;
+<<<<<<< Updated upstream
   air1_ic   = -0.09975; // act sensitive region (.5 mm)
   ic_air2   = -0.10025;
+=======
+  air1_air2 = -0.10225;
+  // air1_ic   = -0.09975; // act sensitive region (.5 mm)
+  // //ic_air2   = -0.10025;
+  // ic_cr     = -0.10025;
+  // cr_air2   = -0.10225;
+>>>>>>> Stashed changes
   air2_fl   = filt_start;
   fl_air3   = -0.272;
   air3_samp = samp_start;
@@ -41,10 +51,29 @@ MyDetectorConstruction::MyDetectorConstruction()
   ld_end    = -0.34;
 
   // depth midpoints of geoms
+  
+  
+  //diode removal:
+  // air1_mdpt = (vac_air1 + air1_ic) / 2;
+  // ic_mdpt   = (air1_ic + ic_cr) / 2;
+  // cr_mdpt   = (ic_cr + cr_air2)/2;
+  
+
+  //new air 1 mdpt
+
+  //new fl_mdpt
+
+
+  //fl_mdpt   = (air2_fl + fl_air3) / 2;
   vac_mdpt  = (vac_start + vac_air1) / 2;
+<<<<<<< Updated upstream
   air1_mdpt = (vac_air1 + air1_ic) / 2;
   ic_mdpt   = (air1_ic + ic_air2) / 2;
   air2_mdpt = (ic_air2 + air2_fl) / 2;
+=======
+  air1_mdpt = (vac_air1 + air1_air2) / 2;
+  air2_mdpt = (air1_air2 + air2_fl) / 2;
+>>>>>>> Stashed changes
   fl_mdpt   = (air2_fl + fl_air3) / 2;
   air3_mdpt = (fl_air3 + air3_samp) / 2;
   samp_mdpt = (air3_samp + samp_bp) / 2;
@@ -52,10 +81,27 @@ MyDetectorConstruction::MyDetectorConstruction()
   ld_mdpt   = (bp_ld + ld_end) / 2;
 
   // half depths
+  
+
+  //diode removal
+  //air1_hlfdep = (vac_air1 - air1_ic) / 2;
+  //ic_hlfdep   = (air1_ic - ic_cr) / 2;
+  //cr_hlfdep   = (ic_cr - cr_air2)/2;
+  
+  //fl_hlfdep   = (air2_fl - fl_air3) / 2;
+  
+  //new air1 and fl hlfdeps
+  
+  
   vac_hlfdep  = (vac_start - vac_air1) / 2;
+<<<<<<< Updated upstream
   air1_hlfdep = (vac_air1 - air1_ic) / 2;
   ic_hlfdep   = (air1_ic - ic_air2) / 2;
   air2_hlfdep = (ic_air2 - air2_fl) / 2;
+=======
+  air1_hlfdep = (vac_air1 - air1_air2) / 2;
+  air2_hlfdep = (air1_air2 - air2_fl) / 2;
+>>>>>>> Stashed changes
   fl_hlfdep   = (air2_fl - fl_air3) / 2;
   air3_hlfdep = (fl_air3 - air3_samp) / 2;
   samp_hlfdep = (air3_samp - samp_bp) / 2;
@@ -87,6 +133,10 @@ void MyDetectorConstruction::DefineMaterials()
   C = nist->FindOrBuildElement("C");
   Ar = nist->FindOrBuildElement("Ar");
   H = nist->FindOrBuildElement("H");
+<<<<<<< Updated upstream
+=======
+  Al = nist->FindOrBuildElement("Al");
+>>>>>>> Stashed changes
 
   // materials
   worldMat = nist->FindOrBuildMaterial("G4_AIR");
@@ -128,7 +178,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   // writing out geom which will input to mt_combiner
   static std::ofstream fileout("geometry.tsv");
+<<<<<<< Updated upstream
   fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_ic " << air1_ic << "\n" << "ic_air2 " << ic_air2 << "\n" << "air2_fl " << air2_fl << "\n" << "fl_air3 " << fl_air3 << "\n" << "air3_samp " << air3_samp << "\n" << "samp_bp " << samp_bp << "\n" << "bp_ld " << bp_ld << "\n" << "ld_end " << ld_end;
+=======
+  //fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_ic " <<  air1_ic << "\n" <<  "ic_cr " << ic_cr << "\n" <<  "cr_air2 " <<  cr_air2 << "\n" << "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
+  
+  //diode removed:
+  fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_air2 " <<  air1_air2 << "\n" <<  "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
+>>>>>>> Stashed changes
   fileout.close();
 
   // defining solid volume, G4Box params half size in x,y,z [default in mm but we change to m]
@@ -154,6 +211,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   // physChamber = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ic_mdpt*m), logicChamber, "physChamber", logicWorld, false, 0, true);
 
+<<<<<<< Updated upstream
   // composed of the .5 mm diode (using IC variables for all sil diode bc too lazy to change all names)
   solidChamber = new G4Box("solidChamber", 0.02*m, 0.02*m, ic_hlfdep*m);
 
@@ -161,6 +219,22 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   physChamber = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ic_mdpt*m), logicChamber, "physChamber", logicWorld, false, 0, true);
 
+=======
+  //goodbye diode
+    // // composed of the .5 mm diode (using IC variables for all sil diode bc too lazy to change all names)
+    // solidChamber = new G4Box("solidChamber", 0.02*m, 0.02*m, ic_hlfdep*m);
+
+    // logicChamber = new G4LogicalVolume(solidChamber, sil, "logicChamber");
+
+    // physChamber = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ic_mdpt*m), logicChamber, "physChamber", logicWorld, false, 0, true);
+
+    // //ceramic, assuming same size as diode on x,y
+    // solidCeramic = new G4Box("solidCeramic", 0.02*m, 0.02*m, cr_hlfdep*m);
+
+    // logicCeramic = new G4LogicalVolume(solidCeramic, ceramic, "logicCeramic");
+
+    // physCeramic = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m,cr_mdpt*m), logicCeramic, "physCeramic", logicWorld, false, 0, true);
+>>>>>>> Stashed changes
 
   // Filter 2 mm thick so 1 mm half depth, 5x5 cm wide offset a bit higher than the IC
   solidFilter = new G4Box("solidFilter", 0.025*m, 0.025*m, fl_hlfdep*m);
@@ -208,8 +282,16 @@ void MyDetectorConstruction::ConstructSDandField()
   MySensitiveDetector *sensVac = new MySensitiveDetector("SensitiveVac");
   logicVac->SetSensitiveDetector(sensVac);
 
+<<<<<<< Updated upstream
   MySensitiveDetector *sensChamber = new MySensitiveDetector("SensitiveChamber");
   logicChamber->SetSensitiveDetector(sensChamber);
+=======
+  //MySensitiveDetector *sensChamber = new MySensitiveDetector("SensitiveChamber");
+  //logicChamber->SetSensitiveDetector(sensChamber);
+
+  //MySensitiveDetector *sensCeramic = new MySensitiveDetector("SensitiveCeramic");
+  //logicCeramic->SetSensitiveDetector(sensCeramic);
+>>>>>>> Stashed changes
 
   MySensitiveDetector *sensFilter = new MySensitiveDetector("SensitiveFilter");
   logicFilter->SetSensitiveDetector(sensFilter);
