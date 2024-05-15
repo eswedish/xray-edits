@@ -92,7 +92,7 @@ void mt_combiner()
     TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
-    // c) Copper
+    // c) Copper 1mm
     TH1F *h21 = new TH1F("h21","dEdep in Copper Filter", 250, 0.0, 0.025);
     TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in Copper Filter", 120, air1_cu, cu_di); 
     TH2D *h23 = new TH2D("h23","XY weighted energy in Copper Filter", 300, -30.0, 30.0, 300, -304.0, 30.0);
