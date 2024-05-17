@@ -17,13 +17,13 @@ int main(int argc, char** argv)
   G4UIExecutive *ui = 0;
 
 // using single or multithreaded run manager accordingly
-  #ifdef G4MULTITHREADED
-    G4MTRunManager * runManager = new G4MTRunManager();
-  #else
-    G4RunManager *runManager = new G4RunManager();
-  #endif
+  // #ifdef G4MULTITHREADED
+  //   G4MTRunManager * runManager = new G4MTRunManager();
+  // #else
+  //   G4RunManager *runManager = new G4RunManager();
+  // #endif
 
-  // G4RunManager *runManager = new G4RunManager();
+  G4RunManager *runManager = new G4RunManager();
 
   runManager->SetUserInitialization(new MyDetectorConstruction());
   runManager->SetUserInitialization(new MyPhysicsList());

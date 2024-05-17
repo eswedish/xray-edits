@@ -9,7 +9,7 @@
 /geom/smat_found 0
 
 # uncomment this pt if database -- enter in name in G4 databse
-/geom/samp_mat G4_GRAPHITE    # G4 database name
+/geom/samp_mat G4_AIR    # G4 database name
 
 # uncomment this pt if manual
 #/geom/samp_mat hdpe          # give name for material
