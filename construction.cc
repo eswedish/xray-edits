@@ -31,8 +31,13 @@ MyDetectorConstruction::MyDetectorConstruction()
   // starts & ends of geoms (units m)
   vac_start = 0.0;
   vac_air1  = -0.035;
+<<<<<<< Updated upstream
   air1_cu  = -0.09875; 
   cu_di    = -0.09975;// act sensitive region (.5 mm)
+=======
+  air1_cb  = -0.08975; 
+  cb_di    = -0.09975;// act sensitive region (.5 mm)
+>>>>>>> Stashed changes
   di_cr     = -0.10025;
   cr_air2   = -0.10225;
   air2_fl   = filt_start;
@@ -46,9 +51,9 @@ MyDetectorConstruction::MyDetectorConstruction()
 
   // depth midpoints of geoms
   vac_mdpt  = (vac_start + vac_air1) / 2;
-  air1_mdpt = (vac_air1 + air1_cu) / 2;
-  cu_mdpt  = (air1_cu + cu_di) / 2;
-  di_mdpt   = (cu_di + di_cr) / 2;
+  air1_mdpt = (vac_air1 + air1_cb) / 2;
+  cb_mdpt  = (air1_cb + cb_di) / 2;
+  di_mdpt   = (cb_di + di_cr) / 2;
   cr_mdpt   = (di_cr + cr_air2)/2;
   air2_mdpt = (cr_air2 + air2_fl) / 2;
   fl_mdpt   = (air2_fl + fl_air3) / 2;
@@ -61,9 +66,9 @@ MyDetectorConstruction::MyDetectorConstruction()
 
   // half depths
   vac_hlfdep  = (vac_start - vac_air1) / 2;
-  air1_hlfdep = (vac_air1 - air1_cu) / 2;
-  cu_hlfdep  = (air1_cu - cu_di) / 2;
-  di_hlfdep   = (cu_di - di_cr) / 2;
+  air1_hlfdep = (vac_air1 - air1_cb) / 2;
+  cb_hlfdep  = (air1_cb - cb_di) / 2;
+  di_hlfdep   = (cb_di - di_cr) / 2;
   cr_hlfdep   = (di_cr - cr_air2)/2;
   air2_hlfdep = (cr_air2 - air2_fl) / 2;
   fl_hlfdep   = (air2_fl - fl_air3) / 2;
@@ -146,7 +151,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   // writing out geom which will input to mt_combiner
   static std::ofstream fileout("geometry.tsv");
-  fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_cu " <<  air1_cu << "\n" <<  "cu_di " <<  cu_di << "\n" <<  "di_cr " << di_cr << "\n" <<  "cr_air2 " <<  cr_air2 << "\n" << "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
+  fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_cb " <<  air1_cb << "\n" <<  "cb_di " <<  cb_di << "\n" <<  "di_cr " << di_cr << "\n" <<  "cr_air2 " <<  cr_air2 << "\n" << "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
   fileout.close();
 
   // defining solid volume, G4Box params half size in x,y,z [default in mm but we change to m]
@@ -173,11 +178,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // physChamber = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ic_mdpt*m), logicChamber, "physChamber", logicWorld, false, 0, true);
 
   // copper filter 1 mm above diode
-  solidCopper = new G4Box("solidCopper", 0.02*m, 0.02*m, cu_hlfdep*m);
+  solidCarbon = new G4Box("solidCarbon", 0.02*m, 0.02*m, cb_hlfdep*m);
 
-  logicCopper = new G4LogicalVolume(solidCopper, copper, "logicCopper");
+  logicCarbon = new G4LogicalVolume(solidCarbon, graphite, "logicCarbon");
 
-  physCopper = new G4PVPlacement(0, G4ThreeVector(0.0*m, 0.0*m, cu_mdpt*m), logicCopper, "physCopper", logicWorld, false, 0, true);
+  physCarbon = new G4PVPlacement(0, G4ThreeVector(0.0*m, 0.0*m, cb_mdpt*m), logicCarbon, "physCarbon", logicWorld, false, 0, true);
 
   // composed of the .5 mm diode (using IC variables for all sil diode bc too lazy to change all names)
   solidDiode = new G4Box("solidDiode", 0.02*m, 0.02*m, di_hlfdep*m);
@@ -239,8 +244,8 @@ void MyDetectorConstruction::ConstructSDandField()
   MySensitiveDetector *sensVac = new MySensitiveDetector("SensitiveVac");
   logicVac->SetSensitiveDetector(sensVac);
 
-  MySensitiveDetector *sensCopper = new MySensitiveDetector("SensitiveCopper");
-  logicCopper->SetSensitiveDetector(sensCopper);
+  MySensitiveDetector *sensCarbon = new MySensitiveDetector("SensitiveCarbon");
+  logicCarbon->SetSensitiveDetector(sensCarbon);
 
   MySensitiveDetector *sensDiode = new MySensitiveDetector("SensitiveDiode");
   logicDiode->SetSensitiveDetector(sensDiode);

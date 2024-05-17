@@ -6,8 +6,8 @@ void mt_combiner()
 
     int i, n, fEvent, fParentID, fTrackID, fProcess;
     double fX, fY, fZ, time, dedep, fEdep;
-    double totEdep_vac, totEdep_air1, totEdep_fl, totEdep_air2, totEdep_di, totEdep_air3, totEdep_ff, totEdep_samp, totEdep_bp, totEdep_ld, totEdep, totEdep_cr, totEdep_cu; //totEdep_ic
-    double vac_start, vac_air1, air1_cu, cu_di, di_cr, cr_air2, air2_fl, fl_air3, air3_samp, samp_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
+    double totEdep_vac, totEdep_air1, totEdep_fl, totEdep_air2, totEdep_di, totEdep_air3, totEdep_ff, totEdep_samp, totEdep_bp, totEdep_ld, totEdep, totEdep_cr, totEdep_cb; //totEdep_ic
+    double vac_start, vac_air1, air1_cb, cb_di, di_cr, cr_air2, air2_fl, fl_air3, air3_samp, samp_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
     //double x[300000], y[300000], z[300000];
     double dedp[1000000], dedpc[300000], dedpff[300000], dedps[300000], dedpbp[300000], dedpld[300000];
     double geom[20], geom_conv[20];
@@ -43,7 +43,7 @@ void mt_combiner()
     totEdep_vac=0.0;
     totEdep_air1=0.0;
     totEdep_fl=0.0; 
-    totEdep_cu=0.0; //copper filter
+    totEdep_cb=0.0; //carbon filter
     totEdep_cr=0.0; //ceramic
     totEdep_air2=0.0;
     totEdep_di=0.0; //diode
@@ -66,8 +66,8 @@ void mt_combiner()
 
     vac_start = geom_conv[0];
     vac_air1  = geom_conv[1];
-    air1_cu   = geom_conv[2];
-    cu_di     = geom_conv[3];
+    air1_cb   = geom_conv[2];
+    cb_di     = geom_conv[3];
     di_cr     = geom_conv[4];
     cr_air2   = geom_conv[5];
     air2_fl   = geom_conv[6];
@@ -88,19 +88,27 @@ void mt_combiner()
 
     // b) Air Gap 1
     TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 250, 0.0, 0.025);
-    TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_cu);
+    TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_cb);
     TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
+<<<<<<< Updated upstream
     // c) Copper
     TH1F *h21 = new TH1F("h21","dEdep in Copper Filter", 250, 0.0, 0.025);
     TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in Copper Filter", 120, air1_cu, cu_di); 
     TH2D *h23 = new TH2D("h23","XY weighted energy in Copper Filter", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h24 = new TH2D("h24","XY e- weighted energy in Copper Filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+=======
+    // c) Carbon
+    TH1F *h21 = new TH1F("h21","dEdep in Carbon Filter", 250, 0.0, 0.025);
+    TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in Carbon Filter", 120, air1_cb, cb_di); 
+    TH2D *h23 = new TH2D("h23","XY weighted energy in Carbon Filter", 300, -30.0, 30.0, 300, -304.0, 30.0);
+    TH2D *h24 = new TH2D("h24","XY e- weighted energy in Carbon Filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
+>>>>>>> Stashed changes
 
     // d) Diode
     TH1F *h31 = new TH1F("h31","dEdep in Diode", 250, 0.0, 0.025);
-    TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Diode", 120, cu_di, di_cr); 
+    TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Diode", 120, cb_di, di_cr); 
     TH2D *h33 = new TH2D("h33","XY weighted energy in Diode", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h34 = new TH2D("h34","XY e- weighted energy in Diode", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH1F *h35 = new TH1F("h35", "fEdep in Diode", 250, 0.0, 0.025);
@@ -172,7 +180,7 @@ void mt_combiner()
         }
 
         // b) Air Gap 1
-        if ((fZ >= vac_air1) && (fZ< air1_cu))
+        if ((fZ >= vac_air1) && (fZ< air1_cb))
         {
           if (((-250< fX) && (fX< 250)) && ((-250 < fY) && (fY < 250)))
             {
@@ -184,19 +192,19 @@ void mt_combiner()
         }
 
         // c) Copper Filter
-        if ((fZ >= air1_cu) && (fZ< cu_di))
+        if ((fZ >= air1_cb) && (fZ< cb_di))
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
               h21->Fill(dedep);
               h22->Fill(fZ, dedep);
               h23->Fill(fX, fY, dedep);
-              totEdep_cu = totEdep_cu + dedep;
+              totEdep_cb = totEdep_cb + dedep;
             }
         }
 
         // c) -- now Diode :)
-        if ((fZ >= cu_di) && (fZ< di_cr)) 
+        if ((fZ >= cb_di) && (fZ< di_cr)) 
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
@@ -322,7 +330,7 @@ void mt_combiner()
       if(fEdep != 0)
       {
         //c) diode
-        if ((fZ >= cu_di) && (fZ< di_cr))
+        if ((fZ >= cb_di) && (fZ< di_cr))
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
@@ -333,25 +341,25 @@ void mt_combiner()
      }
 
 
-    cout << "e vac:" << totEdep_vac << endl;
+    cout << "e vac: " << totEdep_vac << endl;
     cout << "e air 1: " << totEdep_air1 << endl;
-    cout << "e cu: " << totEdep_cu << endl;
+    cout << "e cb: " << totEdep_cb << endl;
     cout << "e diode: " << totEdep_di << endl;
     cout << "e ceramic: " << totEdep_cr << endl;
-    cout << "e air 2:" << totEdep_air2 << endl;
-    cout << "e filter:" << totEdep_fl << endl;
-    cout << "e air 3:" << totEdep_air3 << endl;
-    cout << "e sample:" << totEdep_samp << endl;
-    cout << "e bp:"<< totEdep_bp << endl;
-    cout << "e ld:" << totEdep_ld << endl;
-    cout << "tot e:" << totEdep << endl;
+    cout << "e air 2: " << totEdep_air2 << endl;
+    cout << "e filter: " << totEdep_fl << endl;
+    cout << "e air 3: " << totEdep_air3 << endl;
+    cout << "e sample: " << totEdep_samp << endl;
+    cout << "e bp: "<< totEdep_bp << endl;
+    cout << "e ld: " << totEdep_ld << endl;
+    cout << "tot e: " << totEdep << endl;
 
 
     TFile *fout = new TFile("xray_diode.root", "RECREATE");
 
     TCanvas *c0 = new TCanvas("Vac", "Vac");
     TCanvas *c1 = new TCanvas("Air Gap 1", "Air Gap 1");
-    TCanvas *c2 = new TCanvas("Copper Filter", "Copper Filter");
+    TCanvas *c2 = new TCanvas("Carbon Filter", "Carbon Filter");
     TCanvas *c3 = new TCanvas("Diode", "Diode");
     TCanvas *c4 = new TCanvas("Ceramic", "Ceramic");
     TCanvas *c5 = new TCanvas("Air Gap 2", "Air Gap 2");
