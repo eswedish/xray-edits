@@ -6,13 +6,8 @@ void mt_combiner()
 
     int i, n, fEvent, fParentID, fTrackID, fProcess;
     double fX, fY, fZ, time, dedep, fEdep;
-<<<<<<< Updated upstream
-    double totEdep_vac, totEdep_air1, totEdep_fl, totEdep_air2, totEdep_di, totEdep_air3, totEdep_ff, totEdep_samp, totEdep_bp, totEdep_ld, totEdep, totEdep_cr, totEdep_cu; //totEdep_ic
-    double vac_start, vac_air1, air1_cu, cu_di, di_cr, cr_air2, air2_fl, fl_air3, air3_samp, samp_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
-=======
     double totEdep_vac, totEdep_air1, totEdep_air2, totEdep_ldb, totEdep_wd, totEdep_det, totEdep_ff, totEdep_bp, totEdep_ld, totEdep; //totEdep_ic
     double vac_start, vac_air1, air1_ldb, ldb_wd, wd_det, det_air2, air2_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
->>>>>>> Stashed changes
     //double x[300000], y[300000], z[300000];
     double dedp[1000000], dedpc[300000], dedpff[300000], dedps[300000], dedpbp[300000], dedpld[300000];
     double geom[20], geom_conv[20];
@@ -37,6 +32,9 @@ void mt_combiner()
     photon_chain.SetBranchAddress("fTrackID", &fTrackID);
     photon_chain.SetBranchAddress("fProcess", &fProcess);
     
+    //scoring.SetBranchAddress("fX", &fX);
+    //scoring.SetBranchAddress("fY", &fY);
+    //scoring.SetBranchAddress("fZ", &fZ);
     scoring.SetBranchAddress("fEdep", &fEdep);
 
 
@@ -47,24 +45,16 @@ void mt_combiner()
     // j. sample (295, 300) k. base plate (300, 320) l is tot
     totEdep_vac=0.0;
     totEdep_air1=0.0;
-<<<<<<< Updated upstream
-    totEdep_fl=0.0; 
-    totEdep_cu=0.0; //copper filter
-    totEdep_cr=0.0; //ceramic
-    totEdep_air2=0.0;
-    totEdep_di=0.0; //diode
-    totEdep_air3=0.0;
-=======
     //totEdep_fl=0.0; 
     totEdep_ldb=0.0;
     totEdep_wd=0.0; //beryllium window 
     //totEdep_cr=0.0; //ceramic
     totEdep_det=0.0;
->>>>>>> Stashed changes
     totEdep_ff=0.0;
     totEdep_bp=0.0;
     totEdep_ld=0.0;
     totEdep=0.0;
+
 
     n = 0;
     FILE * file = fopen("geometry.tsv", "r");
@@ -78,18 +68,6 @@ void mt_combiner()
 
     vac_start = geom_conv[0];
     vac_air1  = geom_conv[1];
-<<<<<<< Updated upstream
-    air1_cu   = geom_conv[2];
-    cu_di     = geom_conv[3];
-    di_cr     = geom_conv[4];
-    cr_air2   = geom_conv[5];
-    air2_fl   = geom_conv[6];
-    fl_air3   = geom_conv[7];
-    air3_samp = geom_conv[8]; 
-    samp_bp   = geom_conv[9]; 
-    bp_ld     = geom_conv[10]; 
-    ld_end    = geom_conv[11]; 
-=======
     air1_ldb  = geom_conv[2];
     ldb_wd    = geom_conv[3];
     wd_det    = geom_conv[4];
@@ -101,81 +79,61 @@ void mt_combiner()
     // samp_bp   = geom_conv[9]; 
     bp_ld     = geom_conv[7]; 
     ld_end    = geom_conv[8]; 
->>>>>>> Stashed changes
     
     //Histogram setup:
     // for each of above, do dEdep, Z dist w dEdep weight, XY weighted energy, now also fEdep
 
     // a) Vacuum 
-    TH1F *h1 = new TH1F("h1","dEdep in Vac", 250, 0.0, 0.025);
+    TH1F *h1 = new TH1F("h1","dEdep in Vac", 500, 0.0, 0.05);
     TH1F *h2 = new TH1F("h2","Z Dist w/ dEdep Weighting in Vac", 150, vac_start, vac_air1);
     TH2D *h3 = new TH2D("h3","XY Gamma weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h4 = new TH2D("h4","XY e- weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // b) Air Gap 1
-    TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 250, 0.0, 0.025);
-<<<<<<< Updated upstream
-    TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_cu);
-    TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
-    TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
-
-    // c) Copper 1mm
-    TH1F *h21 = new TH1F("h21","dEdep in Copper Filter", 250, 0.0, 0.025);
-    TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting in Copper Filter", 120, air1_cu, cu_di); 
-    TH2D *h23 = new TH2D("h23","XY weighted energy in Copper Filter", 300, -30.0, 30.0, 300, -304.0, 30.0);
-    TH2D *h24 = new TH2D("h24","XY e- weighted energy in Copper Filter", 300, -30.0, 30.0, 300, -30.0, 30.0);
-
-    // d) Diode
-    TH1F *h31 = new TH1F("h31","dEdep in Diode", 250, 0.0, 0.025);
-    TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Diode", 120, cu_di, di_cr); 
-    TH2D *h33 = new TH2D("h33","XY weighted energy in Diode", 300, -30.0, 30.0, 300, -304.0, 30.0);
-    TH2D *h34 = new TH2D("h34","XY e- weighted energy in Diode", 300, -30.0, 30.0, 300, -30.0, 30.0);
-    TH1F *h35 = new TH1F("h35", "fEdep in Diode", 250, 0.0, 0.025);
-=======
+    TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 500, 0.0, 0.05);
     TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_ldb);
     TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // c) Lead Block
-    TH1F *h21 = new TH1F("h21","dEdep in Lead Block", 250, 0.0, 0.025);
+    TH1F *h21 = new TH1F("h21","dEdep in Lead Block", 500, 0.0, 0.05);
     TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting Lead Block", 118, air1_ldb, ldb_wd);
     TH2D *h23 = new TH2D("h23","XY weighted energy in Lead Block", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h24 = new TH2D("h24","XY e- weighted energy in Lead Block", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // d) Window
-    TH1F *h31 = new TH1F("h31","dEdep in Beryllium Window", 250, 0.0, 0.025);
+    TH1F *h31 = new TH1F("h31","dEdep in Beryllium Window", 500, 0.0, 0.05);
     TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Beryllium Window", 120, ldb_wd, wd_det); 
     TH2D *h33 = new TH2D("h33","XY weighted energy in Beryllium Window", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h34 = new TH2D("h34","XY e- weighted energy in Beryllium Window", 300, -30.0, 30.0, 300, -30.0, 30.0);
->>>>>>> Stashed changes
 
     // e) CdTe Detector
     TH1F *h41 = new TH1F("h41","dEdep in CdTe Detector", 500, 0.0, 0.05);
     TH1F *h42 = new TH1F("h42","Z Dist w/ dEdep Weighting in CdTe Detector", 120, wd_det, det_air2); 
     TH2D *h43 = new TH2D("h43","XY weighted energy in CdTe Detector", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h44 = new TH2D("h44","XY e- weighted energy in CdTe Detector", 300, -30.0, 30.0, 300, -30.0, 30.0);
-    TH1F *h45 = new TH1F("h45", "fEdep in CdTe Detector", 250, 0.0, 0.025);
+    TH1F *h45 = new TH1F("h45", "fEdep in CdTe Detector", 500, 0.0, 0.05);
 
     // f) Air Gap 2
-    TH1F *h51 = new TH1F("h51","dEdep in Air Gap 2", 250, 0.0, 0.025);
+    TH1F *h51 = new TH1F("h51","dEdep in Air Gap 2", 500, 0.0, 0.05);
     TH1F *h52 = new TH1F("h52","Z Dist w/ dEdep Weighting in Air Gap 2", 164, det_air2, air2_bp); 
     TH2D *h53 = new TH2D("h53","XY weighted energy in Air Gap 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h54 = new TH2D("h54","XY e- weighted energy in Air Gap 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // g) Base Plate
-    TH1F *h61 = new TH1F("h61","dEdep in BP", 300, 0.0, 0.03);
+    TH1F *h61 = new TH1F("h61","dEdep in BP", 500, 0.0, 0.05);
     TH1F *h62 = new TH1F("h62","Z Dist w/ dEdep Weighting in BP", 115, air2_bp, bp_ld);
     TH2D *h63 = new TH2D("h63","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h64 = new TH2D("h64","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // h) Lead
-    TH1F *h71 = new TH1F("h71","dEdep in Lead", 300, 0.0, 0.03);
+    TH1F *h71 = new TH1F("h71","dEdep in Lead", 500, 0.0, 0.05);
     TH1F *h72 = new TH1F("h72","Z Dist w/ dEdep Weighting in Lead", 130, bp_ld, ld_end);
     TH2D *h73 = new TH2D("h73","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h74 = new TH2D("h74","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
 
     // i) Total
-    TH1F *h81 = new TH1F("h81","dEdep Tot", 300, 0.0, 0.03);
+    TH1F *h81 = new TH1F("h81","dEdep Tot", 500, 0.0, 0.05);
     TH1F *h82 = new TH1F("h82","Z Dist w/ dEdep Weighting Tot", 170, vac_start, ld_end);
     TH2D *h83 = new TH2D("h83","XY gamma weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h84 = new TH2D("h84","XY e- weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
@@ -199,11 +157,7 @@ void mt_combiner()
         }
 
         // b) Air Gap 1
-<<<<<<< Updated upstream
-        if ((fZ >= vac_air1) && (fZ< air1_cu))
-=======
         if ((fZ >= vac_air1) && (fZ< air1_ldb))
->>>>>>> Stashed changes
         {
           if (((-250< fX) && (fX< 250)) && ((-250 < fY) && (fY < 250)))
             {
@@ -214,34 +168,20 @@ void mt_combiner()
             }
         }
 
-<<<<<<< Updated upstream
-        // c) Copper Filter
-        if ((fZ >= air1_cu) && (fZ< cu_di))
-=======
         // c) Lead Block
         if ((fZ >= air1_ldb) && (fZ< ldb_wd))
->>>>>>> Stashed changes
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
               h21->Fill(dedep);
               h22->Fill(fZ, dedep);
               h23->Fill(fX, fY, dedep);
-<<<<<<< Updated upstream
-              totEdep_cu = totEdep_cu + dedep;
-            }
-        }
-
-        // c) -- now Diode :)
-        if ((fZ >= cu_di) && (fZ< di_cr)) 
-=======
               totEdep_ldb = totEdep_ldb + dedep;
             }
         }
 
         // d) Beryllium Window
         if ((fZ >= ldb_wd) && (fZ< wd_det))
->>>>>>> Stashed changes
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
@@ -322,13 +262,8 @@ void mt_combiner()
       scoring.GetEntry(i);
       if(fEdep != 0)
       {
-<<<<<<< Updated upstream
-        //c) diode
-        if ((fZ >= cu_di) && (fZ< di_cr))
-=======
         //c) CdTe Detector
-        if ((fZ >= wd_det) && (fZ< det_air2))
->>>>>>> Stashed changes
+        if ((fZ >= vac_start) && (fZ< ld_end))
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
@@ -339,20 +274,8 @@ void mt_combiner()
      }
 
 
-    cout << "e vac:" << totEdep_vac << endl;
+    cout << "e vac: " << totEdep_vac << endl;
     cout << "e air 1: " << totEdep_air1 << endl;
-<<<<<<< Updated upstream
-    cout << "e cu: " << totEdep_cu << endl;
-    cout << "e diode: " << totEdep_di << endl;
-    cout << "e ceramic: " << totEdep_cr << endl;
-    cout << "e air 2:" << totEdep_air2 << endl;
-    cout << "e filter:" << totEdep_fl << endl;
-    cout << "e air 3:" << totEdep_air3 << endl;
-    cout << "e sample:" << totEdep_samp << endl;
-    cout << "e bp:"<< totEdep_bp << endl;
-    cout << "e ld:" << totEdep_ld << endl;
-    cout << "tot e:" << totEdep << endl;
-=======
     cout << "e ldb: " << totEdep_ldb << endl;
     cout << "e wd: " << totEdep_wd << endl;
     cout << "e det: " << totEdep_det << endl;
@@ -360,22 +283,15 @@ void mt_combiner()
     cout << "e bp: "<< totEdep_bp << endl;
     cout << "e ld: " << totEdep_ld << endl;
     cout << "tot e: " << totEdep << endl;
->>>>>>> Stashed changes
 
 
     TFile *fout = new TFile("xray_diode.root", "RECREATE");
 
     TCanvas *c0 = new TCanvas("Vac", "Vac");
     TCanvas *c1 = new TCanvas("Air Gap 1", "Air Gap 1");
-<<<<<<< Updated upstream
-    TCanvas *c2 = new TCanvas("Copper Filter", "Copper Filter");
-    TCanvas *c3 = new TCanvas("Diode", "Diode");
-    TCanvas *c4 = new TCanvas("Ceramic", "Ceramic");
-=======
     TCanvas *c2 = new TCanvas("Lead Block", "Lead Block");
     TCanvas *c3 = new TCanvas("Beryllium Window", "Beryllium Window");
     TCanvas *c4 = new TCanvas("CdTe Detector", "CdTe Detector");
->>>>>>> Stashed changes
     TCanvas *c5 = new TCanvas("Air Gap 2", "Air Gap 2");
     TCanvas *c6 = new TCanvas("Base Plate", "Base Plate");
     TCanvas *c7 = new TCanvas("Lead", "Lead");

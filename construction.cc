@@ -165,7 +165,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   solidLBlock = new G4Box("solidLBlock", 0.005*m, 0.005*m, ldb_hlfdep*m);
 
   logicLBlock = new G4LogicalVolume(solidLBlock, lead, "logicLBlock");
-    
+
   physLBlock = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ldb_mdpt*m), logicLBlock, "physLBlock", logicWorld, false, 0, true);
 
 
