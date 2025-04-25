@@ -263,7 +263,7 @@ void mt_combiner()
       if(fEdep != 0)
       {
         //c) CdTe Detector
-        if ((fZ >= vac_start) && (fZ< ld_end))
+        if ((fZ >= wd_det) && (fZ< det_air2))
         {
           if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
             {
