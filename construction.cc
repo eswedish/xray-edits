@@ -31,6 +31,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   // starts & ends of geoms (units m)
   vac_start = 0.0;
   vac_air1  = -0.035;
+<<<<<<< Updated upstream
   air1_cu  = -0.09955; 
   cu_di    = -0.09975;// act sensitive region (.5 mm)
   di_cr     = -0.10025;
@@ -39,6 +40,13 @@ MyDetectorConstruction::MyDetectorConstruction()
   fl_air3   = -0.272;
   air3_samp = samp_start;
   samp_bp   = -0.291;
+=======
+  air1_ldb   = -0.08965; //lead block 10 mm (ld = lead, ldb = lead block on top of detector)
+  ldb_wd   = -0.09965; //aluminum 1.59mm
+  wd_det    = -0.09975;// act sensitive region (.5 mm)
+  det_air2  = -0.10075;
+  air2_bp   = -0.291;
+>>>>>>> Stashed changes
   bp_ld     = -0.314;
   ld_end    = -0.34;
   
@@ -46,6 +54,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 
   // depth midpoints of geoms
   vac_mdpt  = (vac_start + vac_air1) / 2;
+<<<<<<< Updated upstream
   air1_mdpt = (vac_air1 + air1_cu) / 2;
   cu_mdpt  = (air1_cu + cu_di) / 2;
   di_mdpt   = (cu_di + di_cr) / 2;
@@ -55,12 +64,21 @@ MyDetectorConstruction::MyDetectorConstruction()
   air3_mdpt = (fl_air3 + air3_samp) / 2;
   samp_mdpt = (air3_samp + samp_bp) / 2;
   bp_mdpt   = (samp_bp + bp_ld) / 2;
+=======
+  air1_mdpt = (vac_air1 + air1_ldb) / 2;
+  ldb_mdpt  = (air1_ldb + ldb_wd) / 2;
+  wd_mdpt   = (ldb_wd + wd_det) / 2;
+  det_mdpt  = (wd_det + det_air2) / 2;
+  air2_mdpt = (det_air2 + air2_bp) / 2;
+  bp_mdpt   = (air2_bp + bp_ld) / 2;
+>>>>>>> Stashed changes
   ld_mdpt   = (bp_ld + ld_end) / 2;
   
 
 
   // half depths
   vac_hlfdep  = (vac_start - vac_air1) / 2;
+<<<<<<< Updated upstream
   air1_hlfdep = (vac_air1 - air1_cu) / 2;
   cu_hlfdep  = (air1_cu - cu_di) / 2;
   di_hlfdep   = (cu_di - di_cr) / 2;
@@ -70,6 +88,14 @@ MyDetectorConstruction::MyDetectorConstruction()
   air3_hlfdep = (fl_air3 - air3_samp) / 2;
   samp_hlfdep = (air3_samp - samp_bp) / 2;
   bp_hlfdep   = (samp_bp - bp_ld) / 2;
+=======
+  air1_hlfdep = (vac_air1 - air1_ldb) / 2;
+  ldb_hlfdep  = (air1_ldb - ldb_wd) / 2;
+  wd_hlfdep   = (ldb_wd - wd_det) / 2;
+  det_hlfdep  = (wd_det - det_air2) / 2;
+  air2_hlfdep = (det_air2 - air2_bp) / 2;
+  bp_hlfdep   = (air2_bp - bp_ld) / 2;
+>>>>>>> Stashed changes
   ld_hlfdep   = (bp_ld - ld_end) / 2;
   
 
@@ -110,6 +136,9 @@ void MyDetectorConstruction::DefineMaterials()
   bery = nist->FindOrBuildMaterial("G4_Be");
   sil = nist->FindOrBuildMaterial("G4_Si");
   lead = nist->FindOrBuildMaterial("G4_Pb");
+  cadmium_telluride = nist->FindOrBuildMaterial("G4_CADMIUM_TELLURIDE");
+
+  
 
   worldMatVary = new G4Material("worldMatVary", dens101500*kg/m3, worldMat, kStateUndefined, NTP_Temperature, 101500*pascal);
 
@@ -145,8 +174,13 @@ void MyDetectorConstruction::DefineMaterials()
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   // writing out geom which will input to mt_combiner
+
   static std::ofstream fileout("geometry.tsv");
+<<<<<<< Updated upstream
   fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_cu " <<  air1_cu << "\n" <<  "cu_di " <<  cu_di << "\n" <<  "di_cr " << di_cr << "\n" <<  "cr_air2 " <<  cr_air2 << "\n" << "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
+=======
+  fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_ldb " <<  air1_ldb << "\n" <<  "ldb_wd " <<  ldb_wd << "\n" <<  "wd_det " <<  wd_det << "\n" <<  "det_air2 " << det_air2 << "\n" << "air2_bp " <<  air2_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
+>>>>>>> Stashed changes
   fileout.close();
 
   // defining solid volume, G4Box params half size in x,y,z [default in mm but we change to m]
@@ -165,48 +199,39 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   physVac = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, vac_mdpt*m), logicVac, "physVac", logicWorld, false, 0, true);
 
-  // // composed of the 13 mm IC, there's 20 mm air above 
-  // solidChamber = new G4Box("solidChamber", 0.025*m, 0.025*m, ic_hlfdep*m);
 
-  // logicChamber = new G4LogicalVolume(solidChamber, worldMatVary, "logicChamber");
+  //Lead Block (1x1x1cm)
+  solidLBlock = new G4Box("solidLBlock", 0.005*m, 0.005*m, ldb_hlfdep*m);
 
-  // physChamber = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ic_mdpt*m), logicChamber, "physChamber", logicWorld, false, 0, true);
+  logicLBlock = new G4LogicalVolume(solidLBlock, lead, "logicLBlock");
 
+<<<<<<< Updated upstream
   // copper filter 1 mm above diode
   solidCopper = new G4Box("solidCopper", 0.02*m, 0.02*m, cu_hlfdep*m);
 
   logicCopper = new G4LogicalVolume(solidCopper, copper, "logicCopper");
 
   physCopper = new G4PVPlacement(0, G4ThreeVector(0.0*m, 0.0*m, cu_mdpt*m), logicCopper, "physCopper", logicWorld, false, 0, true);
+=======
+  physLBlock = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ldb_mdpt*m), logicLBlock, "physLBlock", logicWorld, false, 0, true);
 
-  // composed of the .5 mm diode (using IC variables for all sil diode bc too lazy to change all names)
-  solidDiode = new G4Box("solidDiode", 0.02*m, 0.02*m, di_hlfdep*m);
 
-  logicDiode = new G4LogicalVolume(solidDiode, sil, "logicDiode");
+  //Window (5x5mm x100microm)
+  solidWindow = new G4Box("solidWindow", 0.0025*m, 0.0025*m, wd_hlfdep*m);
+>>>>>>> Stashed changes
 
-  physDiode = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, di_mdpt*m), logicDiode, "physDiode", logicWorld, false, 0, true);
+  logicWindow = new G4LogicalVolume(solidWindow, bery, "logicWindow");
 
-  //ceramic, assuming same size as diode on x,y
-  solidCeramic = new G4Box("solidCeramic", 0.02*m, 0.02*m, cr_hlfdep*m);
+  physWindow = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, wd_mdpt*m), logicWindow, "physWindow", logicWorld, false, 0, true);
 
-  logicCeramic = new G4LogicalVolume(solidCeramic, ceramic, "logicCeramic");
+  // CdTe detector (5x5x1mm)
+  solidCdTe = new G4Box("solidCdTe", 0.0025*m, 0.0025*m, det_hlfdep*m);
 
-  physCeramic = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, cr_mdpt*m), logicCeramic, "physCeramic", logicWorld, false, 0, true);
+  logicCdTe = new G4LogicalVolume(solidCdTe, cadmium_telluride, "logicCdTe");
 
-  // Filter 2 mm thick so 1 mm half depth, 5x5 cm wide offset a bit higher than the IC
-  solidFilter = new G4Box("solidFilter", 0.025*m, 0.025*m, fl_hlfdep*m);
+  physCdTe = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, det_mdpt*m), logicCdTe, "physCdTe", logicWorld, false, 0, true);
 
-  logicFilter = new G4LogicalVolume(solidFilter, filtMat, "logicFilter");
-
-  physFilter = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, fl_mdpt*m), logicFilter, "physFilter", logicWorld, false, 0, true);
-
-  // first define what each dectector looks like G4Box(name,half-width,half-length,half-height)
-  solidSample = new G4Box("solidSample", 0.025*m, 0.025*m, samp_hlfdep*m);
-
-  logicSample = new G4LogicalVolume(solidSample, sampMat, "logicSample");
-
-  physSample = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, samp_mdpt*m), logicSample, "physSample", logicWorld, false, 0, true);
-
+  
   // Plate 2 cm thick so .01 m half depth, 10 x 10 cm wide
   solidPlate = new G4Box("solidPlate", 0.05*m, 0.05*m, bp_hlfdep*m);
 
@@ -239,20 +264,28 @@ void MyDetectorConstruction::ConstructSDandField()
   MySensitiveDetector *sensVac = new MySensitiveDetector("SensitiveVac");
   logicVac->SetSensitiveDetector(sensVac);
 
+<<<<<<< Updated upstream
   MySensitiveDetector *sensCopper = new MySensitiveDetector("SensitiveCopper");
   logicCopper->SetSensitiveDetector(sensCopper);
+=======
+  MySensitiveDetector *sensLBlock = new MySensitiveDetector("SensitiveLBlock");
+  logicLBlock->SetSensitiveDetector(sensLBlock);
+>>>>>>> Stashed changes
 
-  MySensitiveDetector *sensDiode = new MySensitiveDetector("SensitiveDiode");
-  logicDiode->SetSensitiveDetector(sensDiode);
+  MySensitiveDetector *sensWindow= new MySensitiveDetector("SensitiveWindow");
+  logicWindow->SetSensitiveDetector(sensWindow);
 
-  MySensitiveDetector *sensCeramic = new MySensitiveDetector("SensitiveCeramic");
-  logicCeramic->SetSensitiveDetector(sensCeramic);
+  MySensitiveDetector *sensCdTe = new MySensitiveDetector("SensitiveCdTe");
+  logicCdTe->SetSensitiveDetector(sensCdTe);
 
-  MySensitiveDetector *sensFilter = new MySensitiveDetector("SensitiveFilter");
-  logicFilter->SetSensitiveDetector(sensFilter);
+  // MySensitiveDetector *sensCeramic = new MySensitiveDetector("SensitiveCeramic");
+  // logicCeramic->SetSensitiveDetector(sensCeramic);
 
-  MySensitiveDetector *sensSample = new MySensitiveDetector("SensitiveSample");
-  logicSample->SetSensitiveDetector(sensSample);
+  // MySensitiveDetector *sensFilter = new MySensitiveDetector("SensitiveFilter");
+  // logicFilter->SetSensitiveDetector(sensFilter);
+
+  // MySensitiveDetector *sensSample = new MySensitiveDetector("SensitiveSample");
+  // logicSample->SetSensitiveDetector(sensSample);
 
   MySensitiveDetector *sensPlate = new MySensitiveDetector("SensitivePlate");
   logicPlate->SetSensitiveDetector(sensPlate);

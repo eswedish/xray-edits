@@ -17,8 +17,12 @@
 
 /gps/pos/type Beam
 /gps/pos/centre 0. 0. 0. cm
-/gps/ene/type Arb
 
+#PICK ENERGY TYPE HERE
+/gps/ene/type Arb
+#/gps/ene/mono 0.02 MeV
+
+#IF USING MONO, COMMENT OUT THIS SECTION
 /gps/hist/type energy
 /gps/hist/file ../dk04_50kev_spect.dat
 /gps/hist/inter Lin
@@ -39,5 +43,5 @@
 #/pressure/airPress {press}
 #/run/reinitializeGeometry
 
-/run/beamOn 1000000
+/run/beamOn 10000000
 #/run/printProgress 10
