@@ -31,22 +31,11 @@ MyDetectorConstruction::MyDetectorConstruction()
   // starts & ends of geoms (units m)
   vac_start = 0.0;
   vac_air1  = -0.035;
-<<<<<<< Updated upstream
-  air1_cu  = -0.09955; 
-  cu_di    = -0.09975;// act sensitive region (.5 mm)
-  di_cr     = -0.10025;
-  cr_air2   = -0.10225;
-  air2_fl   = filt_start;
-  fl_air3   = -0.272;
-  air3_samp = samp_start;
-  samp_bp   = -0.291;
-=======
   air1_ldb   = -0.08965; //lead block 10 mm (ld = lead, ldb = lead block on top of detector)
   ldb_wd   = -0.09965; //aluminum 1.59mm
   wd_det    = -0.09975;// act sensitive region (.5 mm)
   det_air2  = -0.10075;
   air2_bp   = -0.291;
->>>>>>> Stashed changes
   bp_ld     = -0.314;
   ld_end    = -0.34;
   
@@ -54,48 +43,24 @@ MyDetectorConstruction::MyDetectorConstruction()
 
   // depth midpoints of geoms
   vac_mdpt  = (vac_start + vac_air1) / 2;
-<<<<<<< Updated upstream
-  air1_mdpt = (vac_air1 + air1_cu) / 2;
-  cu_mdpt  = (air1_cu + cu_di) / 2;
-  di_mdpt   = (cu_di + di_cr) / 2;
-  cr_mdpt   = (di_cr + cr_air2)/2;
-  air2_mdpt = (cr_air2 + air2_fl) / 2;
-  fl_mdpt   = (air2_fl + fl_air3) / 2;
-  air3_mdpt = (fl_air3 + air3_samp) / 2;
-  samp_mdpt = (air3_samp + samp_bp) / 2;
-  bp_mdpt   = (samp_bp + bp_ld) / 2;
-=======
   air1_mdpt = (vac_air1 + air1_ldb) / 2;
   ldb_mdpt  = (air1_ldb + ldb_wd) / 2;
   wd_mdpt   = (ldb_wd + wd_det) / 2;
   det_mdpt  = (wd_det + det_air2) / 2;
   air2_mdpt = (det_air2 + air2_bp) / 2;
   bp_mdpt   = (air2_bp + bp_ld) / 2;
->>>>>>> Stashed changes
   ld_mdpt   = (bp_ld + ld_end) / 2;
   
 
 
   // half depths
   vac_hlfdep  = (vac_start - vac_air1) / 2;
-<<<<<<< Updated upstream
-  air1_hlfdep = (vac_air1 - air1_cu) / 2;
-  cu_hlfdep  = (air1_cu - cu_di) / 2;
-  di_hlfdep   = (cu_di - di_cr) / 2;
-  cr_hlfdep   = (di_cr - cr_air2)/2;
-  air2_hlfdep = (cr_air2 - air2_fl) / 2;
-  fl_hlfdep   = (air2_fl - fl_air3) / 2;
-  air3_hlfdep = (fl_air3 - air3_samp) / 2;
-  samp_hlfdep = (air3_samp - samp_bp) / 2;
-  bp_hlfdep   = (samp_bp - bp_ld) / 2;
-=======
   air1_hlfdep = (vac_air1 - air1_ldb) / 2;
   ldb_hlfdep  = (air1_ldb - ldb_wd) / 2;
   wd_hlfdep   = (ldb_wd - wd_det) / 2;
   det_hlfdep  = (wd_det - det_air2) / 2;
   air2_hlfdep = (det_air2 - air2_bp) / 2;
   bp_hlfdep   = (air2_bp - bp_ld) / 2;
->>>>>>> Stashed changes
   ld_hlfdep   = (bp_ld - ld_end) / 2;
   
 
@@ -176,11 +141,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // writing out geom which will input to mt_combiner
 
   static std::ofstream fileout("geometry.tsv");
-<<<<<<< Updated upstream
-  fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_cu " <<  air1_cu << "\n" <<  "cu_di " <<  cu_di << "\n" <<  "di_cr " << di_cr << "\n" <<  "cr_air2 " <<  cr_air2 << "\n" << "air2_fl " <<  air2_fl << "\n" << "fl_air3 " <<  fl_air3 << "\n" << "air3_samp " <<  air3_samp << "\n" << "samp_bp " <<  samp_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
-=======
   fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_ldb " <<  air1_ldb << "\n" <<  "ldb_wd " <<  ldb_wd << "\n" <<  "wd_det " <<  wd_det << "\n" <<  "det_air2 " << det_air2 << "\n" << "air2_bp " <<  air2_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
->>>>>>> Stashed changes
   fileout.close();
 
   // defining solid volume, G4Box params half size in x,y,z [default in mm but we change to m]
@@ -204,21 +165,12 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   solidLBlock = new G4Box("solidLBlock", 0.005*m, 0.005*m, ldb_hlfdep*m);
 
   logicLBlock = new G4LogicalVolume(solidLBlock, lead, "logicLBlock");
-
-<<<<<<< Updated upstream
-  // copper filter 1 mm above diode
-  solidCopper = new G4Box("solidCopper", 0.02*m, 0.02*m, cu_hlfdep*m);
-
-  logicCopper = new G4LogicalVolume(solidCopper, copper, "logicCopper");
-
-  physCopper = new G4PVPlacement(0, G4ThreeVector(0.0*m, 0.0*m, cu_mdpt*m), logicCopper, "physCopper", logicWorld, false, 0, true);
-=======
+    
   physLBlock = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, ldb_mdpt*m), logicLBlock, "physLBlock", logicWorld, false, 0, true);
 
 
   //Window (5x5mm x100microm)
   solidWindow = new G4Box("solidWindow", 0.0025*m, 0.0025*m, wd_hlfdep*m);
->>>>>>> Stashed changes
 
   logicWindow = new G4LogicalVolume(solidWindow, bery, "logicWindow");
 
@@ -264,13 +216,8 @@ void MyDetectorConstruction::ConstructSDandField()
   MySensitiveDetector *sensVac = new MySensitiveDetector("SensitiveVac");
   logicVac->SetSensitiveDetector(sensVac);
 
-<<<<<<< Updated upstream
-  MySensitiveDetector *sensCopper = new MySensitiveDetector("SensitiveCopper");
-  logicCopper->SetSensitiveDetector(sensCopper);
-=======
   MySensitiveDetector *sensLBlock = new MySensitiveDetector("SensitiveLBlock");
   logicLBlock->SetSensitiveDetector(sensLBlock);
->>>>>>> Stashed changes
 
   MySensitiveDetector *sensWindow= new MySensitiveDetector("SensitiveWindow");
   logicWindow->SetSensitiveDetector(sensWindow);
