@@ -5,9 +5,10 @@ void mt_combiner()
     gROOT->Reset();
 
     int i, n, fEvent, fParentID, fTrackID, fProcess;
-    double fX, fY, fZ, time, dedep, fEdep;
+    double fX, fY, fZ, time, dedep, fEdep, fEdep_vac, fEdep_air1, fEdep_ldb, fEdep_wd, fEdep_det, fEdep_air2, fEdep_bp, fEdep_ld, fEdep_tot;
     double totEdep_vac, totEdep_air1, totEdep_air2, totEdep_ldb, totEdep_wd, totEdep_det, totEdep_ff, totEdep_bp, totEdep_ld, totEdep; //totEdep_ic
     double vac_start, vac_air1, air1_ldb, ldb_wd, wd_det, det_air2, air2_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
+    int prevEvent_vac, prevEvent_air1, prevEvent_air2, prevEvent_ldb, prevEvent_wd, prevEvent_det, prevEvent_bp, prevEvent_ld, prevEvent_tot;
     //double x[300000], y[300000], z[300000];
     double dedp[1000000], dedpc[300000], dedpff[300000], dedps[300000], dedpbp[300000], dedpld[300000];
     double geom[20], geom_conv[20];
@@ -39,6 +40,7 @@ void mt_combiner()
 
 
     photon_chain.Merge("outputsum.root");
+
 
     // for each one ie a. vacuum (0,30) b. air1 (35,99.75) c. copper () d. diode (99.75,100.25) e. ceramic ()
     // f. air 2 (100.25,270) g. filter (270, 272) h. air3 (272, 289.05) i. finalfilt (294, 295) - this is air :)
@@ -88,24 +90,30 @@ void mt_combiner()
     TH1F *h2 = new TH1F("h2","Z Dist w/ dEdep Weighting in Vac", 150, vac_start, vac_air1);
     TH2D *h3 = new TH2D("h3","XY Gamma weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h4 = new TH2D("h4","XY e- weighted energy in Vac", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h5 = new TH1F("h5", "fEdep in Vac", 500, 0.0, 0.05);
 
     // b) Air Gap 1
     TH1F *h11 = new TH1F("h11","dEdep in Air Gap 1", 500, 0.0, 0.05);
     TH1F *h12 = new TH1F("h12","Z Dist w/ dEdep Weighting in Air Gap 1", 118, vac_air1, air1_ldb);
     TH2D *h13 = new TH2D("h13","XY weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h14 = new TH2D("h14","XY e- weighted energy in Air Gap 1", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h15 = new TH1F("h15", "fEdep in Air Gap 1", 500, 0.0, 0.05);
+
 
     // c) Lead Block
     TH1F *h21 = new TH1F("h21","dEdep in Lead Block", 500, 0.0, 0.05);
     TH1F *h22 = new TH1F("h22","Z Dist w/ dEdep Weighting Lead Block", 118, air1_ldb, ldb_wd);
     TH2D *h23 = new TH2D("h23","XY weighted energy in Lead Block", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h24 = new TH2D("h24","XY e- weighted energy in Lead Block", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h25 = new TH1F("h25", "fEdep in Lead Block", 500, 0.0, 0.05);
+
 
     // d) Window
     TH1F *h31 = new TH1F("h31","dEdep in Beryllium Window", 500, 0.0, 0.05);
     TH1F *h32 = new TH1F("h32","Z Dist w/ dEdep Weighting in Beryllium Window", 120, ldb_wd, wd_det); 
     TH2D *h33 = new TH2D("h33","XY weighted energy in Beryllium Window", 300, -30.0, 30.0, 300, -304.0, 30.0);
     TH2D *h34 = new TH2D("h34","XY e- weighted energy in Beryllium Window", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h35 = new TH1F("h35", "fEdep in Beryllium Window", 500, 0.0, 0.05);
 
     // e) CdTe Detector
     TH1F *h41 = new TH1F("h41","dEdep in CdTe Detector", 500, 0.0, 0.05);
@@ -119,24 +127,51 @@ void mt_combiner()
     TH1F *h52 = new TH1F("h52","Z Dist w/ dEdep Weighting in Air Gap 2", 164, det_air2, air2_bp); 
     TH2D *h53 = new TH2D("h53","XY weighted energy in Air Gap 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h54 = new TH2D("h54","XY e- weighted energy in Air Gap 2", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h55 = new TH1F("h55", "fEdep in Air Gap 2", 500, 0.0, 0.05);
 
     // g) Base Plate
     TH1F *h61 = new TH1F("h61","dEdep in BP", 500, 0.0, 0.05);
     TH1F *h62 = new TH1F("h62","Z Dist w/ dEdep Weighting in BP", 115, air2_bp, bp_ld);
     TH2D *h63 = new TH2D("h63","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h64 = new TH2D("h64","XY weighted energy in BP", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h65 = new TH1F("h65", "fEdep in Base Plate", 500, 0.0, 0.05);
 
     // h) Lead
     TH1F *h71 = new TH1F("h71","dEdep in Lead", 500, 0.0, 0.05);
     TH1F *h72 = new TH1F("h72","Z Dist w/ dEdep Weighting in Lead", 130, bp_ld, ld_end);
     TH2D *h73 = new TH2D("h73","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h74 = new TH2D("h74","XY weighted energy in Lead", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h75 = new TH1F("h75", "fEdep in Lead", 500, 0.0, 0.05);
 
     // i) Total
     TH1F *h81 = new TH1F("h81","dEdep Tot", 500, 0.0, 0.05);
     TH1F *h82 = new TH1F("h82","Z Dist w/ dEdep Weighting Tot", 170, vac_start, ld_end);
     TH2D *h83 = new TH2D("h83","XY gamma weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
     TH2D *h84 = new TH2D("h84","XY e- weighted energy Tot", 300, -30.0, 30.0, 300, -30.0, 30.0);
+    TH1F *h85 = new TH1F("h85", "fEdep Tot", 500, 0.0, 0.05);
+
+
+    // Setting prevEvent to 0 for all materials to reset the tracking
+    prevEvent_vac = 0;
+    prevEvent_air1 = 0;
+    prevEvent_ldb = 0;
+    prevEvent_wd = 0;
+    prevEvent_det = 0;
+    prevEvent_air2 = 0;
+    prevEvent_bp = 0;
+    prevEvent_ld = 0;
+    prevEvent_tot = 0;
+
+    // Setting fEdep to 0 for all materials to reset
+    fEdep_vac = 0;
+    fEdep_air1 = 0;
+    fEdep_ldb = 0;
+    fEdep_wd = 0;
+    fEdep_det = 0;
+    fEdep_air2 = 0;
+    fEdep_bp = 0;
+    fEdep_ld = 0;
+    fEdep_tot = 0;
 
     //dividing it up into in chamber v Sampleor
     for (i=0; i<photon_chain.GetEntries(); i++)
@@ -153,7 +188,23 @@ void mt_combiner()
               h2->Fill(fZ, dedep);
               h3->Fill(fX, fY, dedep);
               totEdep_vac = totEdep_vac + dedep;
+
+              if(fEvent == prevEvent_vac){
+                fEdep_vac += dedep;
+
+              }
+
+              else{
+                h5->Fill(fEdep_vac);
+                fEdep_vac = dedep;
+                prevEvent_vac = fEvent;
+              
+              }
+
             }
+
+          
+          
         }
 
         // b) Air Gap 1
@@ -165,6 +216,19 @@ void mt_combiner()
               h12->Fill(fZ, dedep);
               h13->Fill(fX, fY, dedep);
               totEdep_air1 = totEdep_air1 + dedep;
+
+              if(fEvent == prevEvent_air1){
+                fEdep_air1 += dedep;
+
+              }
+
+              else{
+                h15->Fill(fEdep_air1);
+                fEdep_air1 = dedep;
+                prevEvent_air1 = fEvent;
+              
+              }
+
             }
         }
 
@@ -177,6 +241,21 @@ void mt_combiner()
               h22->Fill(fZ, dedep);
               h23->Fill(fX, fY, dedep);
               totEdep_ldb = totEdep_ldb + dedep;
+
+
+              if(fEvent == prevEvent_ldb){
+                fEdep_ldb += dedep;
+
+              }
+
+              else{
+                h25->Fill(fEdep_ldb);
+                fEdep_ldb = dedep;
+                prevEvent_ldb = fEvent;
+              
+              }
+
+
             }
         }
 
@@ -189,6 +268,19 @@ void mt_combiner()
               h32->Fill(fZ, dedep);
               h33->Fill(fX, fY, dedep);
               totEdep_wd = totEdep_wd + dedep;
+
+              if(fEvent == prevEvent_wd){
+                fEdep_wd += dedep;
+
+              }
+
+              else{
+                h35->Fill(fEdep_wd);
+                fEdep_wd = dedep;
+                prevEvent_wd = fEvent;
+              
+              }
+
             }
         }
 
@@ -201,7 +293,22 @@ void mt_combiner()
               h42->Fill(fZ, dedep);
               h43->Fill(fX, fY, dedep);
               totEdep_det = totEdep_det + dedep;
+
+              if(fEvent == prevEvent_det){
+                fEdep_det += dedep;
+
+              }
+
+              else{
+                h45->Fill(fEdep_det);
+                fEdep_det = dedep;
+                prevEvent_det = fEvent;
+              
+              }
+
+
             }
+
         }
 
         // e) Air Gap 2 
@@ -213,6 +320,19 @@ void mt_combiner()
               h52->Fill(fZ, dedep);
               h53->Fill(fX, fY, dedep);
               totEdep_air2 = totEdep_air2 + dedep;
+
+              if(fEvent == prevEvent_air2){
+                fEdep_air2 += dedep;
+
+              }
+
+              else{
+                h55->Fill(fEdep_air2);
+                fEdep_air2 = dedep;
+                prevEvent_air2 = fEvent;
+              
+              }
+
             }
         }
 
@@ -225,6 +345,18 @@ void mt_combiner()
               h62->Fill(fZ, dedep);
               h63->Fill(fX, fY, dedep);
               totEdep_bp = totEdep_bp + dedep;
+
+              if(fEvent == prevEvent_bp){
+                fEdep_bp += dedep;
+
+              }
+
+              else{
+                h65->Fill(fEdep_bp);
+                fEdep_bp = dedep;
+                prevEvent_bp = fEvent;
+              
+              }
             }
         }
 
@@ -237,6 +369,18 @@ void mt_combiner()
               h72->Fill(fZ, dedep);
               h73->Fill(fX, fY, dedep);
               totEdep_ld = totEdep_ld + dedep;
+
+              if(fEvent == prevEvent_ld){
+                fEdep_ld += dedep;
+
+              }
+
+              else{
+                h75->Fill(fEdep_ld);
+                fEdep_ld = dedep;
+                prevEvent_ld = fEvent;
+              
+              }
             }
         }
 
@@ -249,6 +393,18 @@ void mt_combiner()
               h82->Fill(fZ, dedep);
               h83->Fill(fX, fY, dedep);
               totEdep = totEdep + dedep;
+
+              if(fEvent == prevEvent_tot){
+                fEdep_tot += dedep;
+
+              }
+
+              else{
+                h85->Fill(fEdep_tot);
+                fEdep_tot = dedep;
+                prevEvent_tot = fEvent;
+              
+              }
             }
         }
 
@@ -256,22 +412,23 @@ void mt_combiner()
       }
     }
     
-    //same process as above but for fEdep
-    for (i=0; i<scoring.GetEntries(); i++)
-    {
-      scoring.GetEntry(i);
-      if(fEdep != 0)
-      {
-        //c) CdTe Detector
-        if ((fZ >= wd_det) && (fZ< det_air2))
-        {
-          if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
-            {
-              h45->Fill(fEdep);
-            }
-        }
-       }
-     }
+    // //same process as above but for fEdep
+    // for (i=0; i<scoring.GetEntries(); i++)
+    // {
+    //   scoring.GetEntry(i);
+    //   if(fEdep != 0)
+    //   {
+    //     //c) CdTe Detector
+    //     cout << fEdep *1000 << endl;
+    //     if ((fZ >= wd_det) && (fZ< det_air2))
+    //     {
+    //       if (((-20< fX) && (fX< 20)) && ((-20 < fY) && (fY < 20)))
+    //         {
+    //           h45->Fill(fEdep);
+    //         }
+    //     }
+    //    }
+    //  }
 
 
     cout << "e vac: " << totEdep_vac << endl;
@@ -315,8 +472,14 @@ void mt_combiner()
       h2->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h2->GetXaxis()->CenterTitle();
       h2->GetYaxis()->CenterTitle();
-    c0->cd(3);
+    c0->cd(4);
     h3->Draw("HIST");
+    c0->cd(3);
+    h5->Draw("HIST");
+      h5->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h5->GetYaxis()->SetTitle("Freq");
+      h5->GetXaxis()->CenterTitle();
+      h5->GetYaxis()->CenterTitle();
     c0->Write();
 
     // b) Air Gap 1
@@ -334,8 +497,14 @@ void mt_combiner()
       h12->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h12->GetXaxis()->CenterTitle();
       h12->GetYaxis()->CenterTitle();
-    c1->cd(3);
+    c1->cd(4);
     h13->Draw("HIST");
+    c1->cd(3);
+    h15->Draw("HIST");
+      h15->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h15->GetYaxis()->SetTitle("Freq");
+      h15->GetXaxis()->CenterTitle();
+      h15->GetYaxis()->CenterTitle();
     c1->Write();
 
 // Lead
@@ -353,8 +522,14 @@ void mt_combiner()
       h22->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h22->GetXaxis()->CenterTitle();
       h22->GetYaxis()->CenterTitle();
-    c2->cd(3);
+    c2->cd(4);
     h23->Draw("HIST");
+    c2->cd(3);
+    h25->Draw("HIST");
+      h25->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h25->GetYaxis()->SetTitle("Freq");
+      h25->GetXaxis()->CenterTitle();
+      h25->GetYaxis()->CenterTitle();
     c2->Write();
 
     // c) Beryllium
@@ -372,8 +547,14 @@ void mt_combiner()
       h32->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h32->GetXaxis()->CenterTitle();
       h32->GetYaxis()->CenterTitle();
-    c3->cd(3);
+    c3->cd(4);
     h33->Draw("HIST");
+    c3->cd(3);
+    h35->Draw("HIST");
+      h35->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h35->GetYaxis()->SetTitle("Freq");
+      h35->GetXaxis()->CenterTitle();
+      h35->GetYaxis()->CenterTitle();
     c3->Write();
 
     // d) CdTe Detector
@@ -416,8 +597,14 @@ void mt_combiner()
       h52->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h52->GetXaxis()->CenterTitle();
       h52->GetYaxis()->CenterTitle();
-    c5->cd(3);
+    c5->cd(4);
     h53->Draw("HIST");
+    c5->cd(3);
+    h55->Draw("HIST");
+      h55->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h55->GetYaxis()->SetTitle("Freq");
+      h55->GetXaxis()->CenterTitle();
+      h55->GetYaxis()->CenterTitle();
     c5->Write();
 
     // f) Baseplate
@@ -435,11 +622,17 @@ void mt_combiner()
       h62->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h62->GetXaxis()->CenterTitle();
       h62->GetYaxis()->CenterTitle();
-    c6->cd(3);
+    c6->cd(4);
     h63->SetMarkerColor(kRed);
     h63->Draw("HIST");
     h64->SetMarkerColor(kBlue);
     h64->Draw("HIST same");
+    c6->cd(3);
+    h65->Draw("HIST");
+      h65->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h65->GetYaxis()->SetTitle("Freq");
+      h65->GetXaxis()->CenterTitle();
+      h65->GetYaxis()->CenterTitle();
     c6->Write();
 
     // f) Lead
@@ -457,8 +650,14 @@ void mt_combiner()
       h72->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h72->GetXaxis()->CenterTitle();
       h72->GetYaxis()->CenterTitle();
-    c7->cd(3);
+    c7->cd(4);
     h73->Draw("HIST");
+    c7->cd(3);
+    h75->Draw("HIST");
+      h75->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h75->GetYaxis()->SetTitle("Freq");
+      h75->GetXaxis()->CenterTitle();
+      h75->GetYaxis()->CenterTitle();
     c7->Write();
 
     // g) Total
@@ -476,8 +675,14 @@ void mt_combiner()
       h82->GetYaxis()->SetTitle("Energy deposited at position (MeV)");
       h82->GetXaxis()->CenterTitle();
       h82->GetYaxis()->CenterTitle();
-    c8->cd(3);
+    c8->cd(4);
     h83->Draw("HIST"); 
+    c8->cd(3);
+    h85->Draw("HIST");
+      h85->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
+      h85->GetYaxis()->SetTitle("Freq");
+      h85->GetXaxis()->CenterTitle();
+      h85->GetYaxis()->CenterTitle();
     c8->Write();
 
     fout->Close();
