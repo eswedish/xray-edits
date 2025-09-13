@@ -6,7 +6,7 @@ void mt_combiner()
 
     int i, n, fEvent, fParentID, fTrackID, fProcess;
     double fX, fY, fZ, time, dedep, fEdep, fEdep_vac, fEdep_air1, fEdep_ldb, fEdep_wd, fEdep_det, fEdep_air2, fEdep_bp, fEdep_ld, fEdep_tot;
-    double totEdep_vac, totEdep_air1, totEdep_air2, totEdep_ldb, totEdep_wd, totEdep_det, totEdep_ff, totEdep_bp, totEdep_ld, totEdep; //totEdep_ic
+    double totEdep_vac, totEdep_air1, totEdep_air2, totEdep_ldb, totEdep_wd, totEdep_det, totEdep_bp, totEdep_ld, totEdep; //totEdep_ic
     double vac_start, vac_air1, air1_ldb, ldb_wd, wd_det, det_air2, air2_bp, bp_ld, ld_end; //air1_ic ic_cr ic_air2 di_air2
     int prevEvent_vac, prevEvent_air1, prevEvent_air2, prevEvent_ldb, prevEvent_wd, prevEvent_det, prevEvent_bp, prevEvent_ld, prevEvent_tot;
     //double x[300000], y[300000], z[300000];
@@ -33,26 +33,21 @@ void mt_combiner()
     photon_chain.SetBranchAddress("fTrackID", &fTrackID);
     photon_chain.SetBranchAddress("fProcess", &fProcess);
     
-    //scoring.SetBranchAddress("fX", &fX);
-    //scoring.SetBranchAddress("fY", &fY);
-    //scoring.SetBranchAddress("fZ", &fZ);
     scoring.SetBranchAddress("fEdep", &fEdep);
 
 
     photon_chain.Merge("outputsum.root");
 
 
-    // for each one ie a. vacuum (0,30) b. air1 (35,99.75) c. copper () d. diode (99.75,100.25) e. ceramic ()
+    // for each one ie a. vacuum (0,30) b. air1 (35,99.75) c. lead block () d. beryllium window () e. CdTe detector ()
     // f. air 2 (100.25,270) g. filter (270, 272) h. air3 (272, 289.05) i. finalfilt (294, 295) - this is air :)
     // j. sample (295, 300) k. base plate (300, 320) l is tot
     totEdep_vac=0.0;
     totEdep_air1=0.0;
-    //totEdep_fl=0.0; 
     totEdep_ldb=0.0;
     totEdep_wd=0.0; //beryllium window 
-    //totEdep_cr=0.0; //ceramic
     totEdep_det=0.0;
-    totEdep_ff=0.0;
+    totEdep_air2=0.0;
     totEdep_bp=0.0;
     totEdep_ld=0.0;
     totEdep=0.0;
@@ -75,10 +70,6 @@ void mt_combiner()
     wd_det    = geom_conv[4];
     det_air2  = geom_conv[5];
     air2_bp   = geom_conv[6];
-    // air2_fl   = geom_conv[6];
-    // fl_air3   = geom_conv[7];
-    // air3_samp = geom_conv[8]; 
-    // samp_bp   = geom_conv[9]; 
     bp_ld     = geom_conv[7]; 
     ld_end    = geom_conv[8]; 
     
@@ -311,7 +302,7 @@ void mt_combiner()
 
         }
 
-        // e) Air Gap 2 
+        // f) Air Gap 2 
         if ((fZ >= det_air2) && (fZ< air2_bp))
         {
           if (((-25< fX) && (fX< 25)) && ((-25 < fY) && (fY < 25)))
@@ -336,7 +327,7 @@ void mt_combiner()
             }
         }
 
-        // f) Base Plate
+        // g) Base Plate
         if ((fZ >= air2_bp) && (fZ< bp_ld))
         {
           if (((-100< fX) && (fX< 100)) && ((-100 < fY) && (fY < 100))) // used to be limit 4.63 both
@@ -360,7 +351,7 @@ void mt_combiner()
             }
         }
 
-        // g) lead
+        // h) lead
         if ((fZ >= bp_ld) && (fZ< ld_end))
         {
           if (((-200< fX) && (fX< 200)) && ((-200 < fY) && (fY < 200))) // used 20 cm -- current world xy
@@ -384,7 +375,7 @@ void mt_combiner()
             }
         }
 
-        // h) Total 
+        // i) Total 
         if ((fZ >= vac_start) && (fZ< ld_end))
         {
           if (((-200< fX) && (fX< 200)) && ((-200 < fY) && (fY < 200))) // used 20 cm -- current world xy
@@ -475,6 +466,7 @@ void mt_combiner()
     c0->cd(4);
     h3->Draw("HIST");
     c0->cd(3);
+    gPad->SetLogy(1);
     h5->Draw("HIST");
       h5->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h5->GetYaxis()->SetTitle("Freq");
@@ -500,6 +492,7 @@ void mt_combiner()
     c1->cd(4);
     h13->Draw("HIST");
     c1->cd(3);
+    gPad->SetLogy(1);
     h15->Draw("HIST");
       h15->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h15->GetYaxis()->SetTitle("Freq");
@@ -507,8 +500,8 @@ void mt_combiner()
       h15->GetYaxis()->CenterTitle();
     c1->Write();
 
-// Lead
- c2->Divide(2,2);
+    // c) Lead Block
+    c2->Divide(2,2);
     c2->cd(1);
     gPad->SetLogy(1);
     h21->Draw("HIST");
@@ -525,6 +518,7 @@ void mt_combiner()
     c2->cd(4);
     h23->Draw("HIST");
     c2->cd(3);
+    gPad->SetLogy(1);
     h25->Draw("HIST");
       h25->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h25->GetYaxis()->SetTitle("Freq");
@@ -532,7 +526,7 @@ void mt_combiner()
       h25->GetYaxis()->CenterTitle();
     c2->Write();
 
-    // c) Beryllium
+    // d) Beryllium
     c3->Divide(2,2);
     c3->cd(1);
     gPad->SetLogy(1);
@@ -550,6 +544,7 @@ void mt_combiner()
     c3->cd(4);
     h33->Draw("HIST");
     c3->cd(3);
+    gPad->SetLogy(1);
     h35->Draw("HIST");
       h35->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h35->GetYaxis()->SetTitle("Freq");
@@ -557,7 +552,7 @@ void mt_combiner()
       h35->GetYaxis()->CenterTitle();
     c3->Write();
 
-    // d) CdTe Detector
+    // e) CdTe Detector
     c4->Divide(2,2);
     c4->cd(1);
     gPad->SetLogy(1);
@@ -575,6 +570,7 @@ void mt_combiner()
     c4->cd(4);
     h43->Draw("HIST");
     c4->cd(3);
+    gPad->SetLogy(1);
     h45->Draw("HIST");
       h45->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h45->GetYaxis()->SetTitle("Freq");
@@ -582,7 +578,7 @@ void mt_combiner()
       h45->GetYaxis()->CenterTitle();
     c4->Write();
 
-    // e) Air Gap 2
+    // f) Air Gap 2
     c5->Divide(2,2);
     c5->cd(1);
     gPad->SetLogy(1);
@@ -600,6 +596,7 @@ void mt_combiner()
     c5->cd(4);
     h53->Draw("HIST");
     c5->cd(3);
+    gPad->SetLogy(1);
     h55->Draw("HIST");
       h55->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h55->GetYaxis()->SetTitle("Freq");
@@ -607,7 +604,7 @@ void mt_combiner()
       h55->GetYaxis()->CenterTitle();
     c5->Write();
 
-    // f) Baseplate
+    // g) Baseplate
     c6->Divide(2,2);
     c6->cd(1);
     gPad->SetLogy(1);
@@ -628,6 +625,7 @@ void mt_combiner()
     h64->SetMarkerColor(kBlue);
     h64->Draw("HIST same");
     c6->cd(3);
+    gPad->SetLogy(1);
     h65->Draw("HIST");
       h65->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h65->GetYaxis()->SetTitle("Freq");
@@ -635,7 +633,7 @@ void mt_combiner()
       h65->GetYaxis()->CenterTitle();
     c6->Write();
 
-    // f) Lead
+    // h) Lead
     c7->Divide(2,2);
     c7->cd(1);
     gPad->SetLogy(1);
@@ -653,6 +651,7 @@ void mt_combiner()
     c7->cd(4);
     h73->Draw("HIST");
     c7->cd(3);
+    gPad->SetLogy(1);
     h75->Draw("HIST");
       h75->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h75->GetYaxis()->SetTitle("Freq");
@@ -660,7 +659,7 @@ void mt_combiner()
       h75->GetYaxis()->CenterTitle();
     c7->Write();
 
-    // g) Total
+    // i) Total
     c8->Divide(2,2);
     c8->cd(1);
     gPad->SetLogy(1);
@@ -678,6 +677,7 @@ void mt_combiner()
     c8->cd(4);
     h83->Draw("HIST"); 
     c8->cd(3);
+    gPad->SetLogy(1);
     h85->Draw("HIST");
       h85->GetXaxis()->SetTitle("Deposited Energy by Event (MeV)");
       h85->GetYaxis()->SetTitle("Freq");

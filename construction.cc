@@ -6,6 +6,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   fMessenger = new G4GenericMessenger(this, "/geom/", "Geometry Construction");
 
   // materials
+  /// These are for older parts of the sim, not in use for this build
   fMessenger->DeclareProperty("filt_mat", filt_mat, "filter material");
   fMessenger->DeclareProperty("smat_found", smat_found, "is samp material found");
   fMessenger->DeclareProperty("samp_mat", samp_mat, "sample material");
@@ -14,10 +15,12 @@ MyDetectorConstruction::MyDetectorConstruction()
   fMessenger->DeclareProperty("samp_state", samp_state, "sample state");
 
   // placements
+  /// These are for older parts of the sim, not in use for this build
   fMessenger->DeclareProperty("filt_start", filt_start, "filter start");
   fMessenger->DeclareProperty("samp_start", samp_start, "sample start");
 
   // **JUST INITIAL DEFS!**
+  /// These are for older parts of the sim, not in use for this build
   filt_mat = "G4_GRAPHITE";
   smat_found = 0;
   samp_mat = "G4_GRAPHITE";
@@ -29,11 +32,12 @@ MyDetectorConstruction::MyDetectorConstruction()
   samp_start = -0.289;
 
   // starts & ends of geoms (units m)
+  /// descends from vacuum
   vac_start = 0.0;
   vac_air1  = -0.035;
-  air1_ldb   = -0.08965; //lead block 10 mm (ld = lead, ldb = lead block on top of detector)
-  ldb_wd   = -0.09965; //aluminum 1.59mm
-  wd_det    = -0.09975;// act sensitive region (.5 mm)
+  air1_ldb   = -0.08965; //lead block 10 mm (ld = lead shielding outside machine, ldb = lead block on top of detector)
+  ldb_wd   = -0.09965;  // wd is beryllium window
+  wd_det    = -0.09975; // 
   det_air2  = -0.10075;
   air2_bp   = -0.291;
   bp_ld     = -0.314;
@@ -53,7 +57,7 @@ MyDetectorConstruction::MyDetectorConstruction()
   
 
 
-  // half depths
+  // half depths 
   vac_hlfdep  = (vac_start - vac_air1) / 2;
   air1_hlfdep = (vac_air1 - air1_ldb) / 2;
   ldb_hlfdep  = (air1_ldb - ldb_wd) / 2;
@@ -138,7 +142,7 @@ void MyDetectorConstruction::DefineMaterials()
  
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
-  // writing out geom which will input to mt_combiner
+  // writing out geom which will input to mt_combiner (make sure to update this when changing geometries otherwise energies at the end of the simulation will be wrong)
 
   static std::ofstream fileout("geometry.tsv");
   fileout << "vac_start " << vac_start << "\n" <<  "vac_air1 " << vac_air1 << "\n" <<  "air1_ldb " <<  air1_ldb << "\n" <<  "ldb_wd " <<  ldb_wd << "\n" <<  "wd_det " <<  wd_det << "\n" <<  "det_air2 " << det_air2 << "\n" << "air2_bp " <<  air2_bp << "\n" <<  "bp_ld " << bp_ld << "\n" <<  "ld_end " << ld_end;
@@ -161,8 +165,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   physVac = new G4PVPlacement(0, G4ThreeVector(0.0*m,0.0*m, vac_mdpt*m), logicVac, "physVac", logicWorld, false, 0, true);
 
 
-  //Lead Block (1x1x1cm)
-  solidLBlock = new G4Box("solidLBlock", 0.005*m, 0.005*m, ldb_hlfdep*m);
+  //Lead Block (10x10x1cm)
+  solidLBlock = new G4Box("solidLBlock", 0.05*m, 0.05*m, ldb_hlfdep*m);
 
   logicLBlock = new G4LogicalVolume(solidLBlock, lead, "logicLBlock");
 
